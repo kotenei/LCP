@@ -1,0 +1,9 @@
+packages:
+  # 所有前端项目存储的地方
+  - 'packages/*'
+  # 公共组件，给所有前端项目用的
+  - 'components/**'
+  # 公共的方法 api - axios
+  - 'apis/**'
+  # 公共的 hooks
+  - 'hooks/**'
