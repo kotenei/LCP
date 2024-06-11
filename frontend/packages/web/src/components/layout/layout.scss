@@ -1,0 +1,25 @@
+@import "../../assets/variables.scss";
+
+.#{$namespace}-layout {
+  min-height: 100%;
+  &-header {
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    &__left {
+      h1 {
+        margin: 0;
+      }
+    }
+  }
+  &-container {
+    flex: 1;
+    height: 100%;
+  }
+
+  &-footer {
+    text-align: center;
+    background-color: white;
+  }
+}

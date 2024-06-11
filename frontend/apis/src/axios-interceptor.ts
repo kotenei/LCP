@@ -1,10 +1,38 @@
-import axios from "axios";
+import axios, {
+  AxiosError,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
 
-interface IInterceptorOps {
-  request: any;
-  response: any;
+interface InterceptorOps {
+  request?: InternalAxiosRequestConfig;
+  response?: AxiosResponse;
 }
 
-const aixosInterceptors = (options: IInterceptorOps) => {};
+const aixosInterceptors = (options?: InterceptorOps) => {
+  const { request = {}, response = {} } = options || {};
+
+  axios.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+      const requestConfig: InternalAxiosRequestConfig = {
+        ...config,
+        ...request,
+      };
+      return requestConfig;
+    },
+    (err: AxiosError) => {
+      return Promise.reject(err);
+    }
+  );
+
+  axios.interceptors.response.use(
+    (res: AxiosResponse) => {
+      return { ...res, ...response };
+    },
+    (err: AxiosError) => {
+      return Promise.reject(err);
+    }
+  );
+};
 
 export default aixosInterceptors;

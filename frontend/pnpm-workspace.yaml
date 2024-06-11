@@ -7,3 +7,5 @@ packages:
   - 'apis/**'
   # 公共的 hooks
   - 'hooks/**'
+  # 公共的 hooks
+  - 'utils/**'

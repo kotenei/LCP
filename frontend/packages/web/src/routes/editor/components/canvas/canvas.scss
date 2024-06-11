@@ -1,0 +1,54 @@
+@import "../../../../assets/variables.scss";
+
+.#{$editor}-canvas {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  &-header {
+    text-align: right;
+  }
+  &-body {
+    flex: 1;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    padding: 32px 0;
+    &__container {
+      position: relative;
+      width: 375px;
+      min-height: 200px;
+      margin: 0 auto;
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: 100%;
+    }
+    &__content {
+      background-color: #fff;
+      height: 560px;
+      position: relative;
+    }
+  }
+  &-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &-wrapper {
+    cursor: pointer;
+    border: 1px solid transparent;
+
+    &:hover {
+      border: 1px dashed #ccc;
+    }
+    &--active {
+      border: 1px solid #1890ff !important;
+    }
+  }
+
+  &-component {
+    position: static !important;
+  }
+}

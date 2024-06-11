@@ -1,18 +1,103 @@
-import { memo } from "react";
-import { Layout } from "antd";
+import { HTMLAttributes, memo } from "react";
+import { Row, Col, Card } from "antd";
+import { Layout } from "../../components/layout";
 
 import "./home.scss";
 
-const { Header, Content, Footer } = Layout;
+export interface HomeProps
+  extends LCPWeb.BasicProps<HTMLAttributes<HTMLDivElement>> {}
 
-const prefixCls = "lcp-web-home";
+const { Meta } = Card;
 
-const Home = (props: any) => {
+const Home = (props: HomeProps) => {
+  const { prefixCls = "lcp-web-home" } = props;
+
   return (
     <Layout className={prefixCls}>
-      <Header>LCP 低代码</Header>
-      <Content>Content</Content>
-      <Footer>Footer</Footer>
+      <div className={`${prefixCls}-container`}>
+        <Row gutter={[32, 32]}>
+          <Col span={6}>
+            <Card
+              hoverable
+              cover={
+                <img
+                  alt="example"
+                  src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+                />
+              }
+            >
+              <Meta
+                title="Europe Street beat"
+                description="www.instagram.com"
+              />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card
+              hoverable
+              cover={
+                <img
+                  alt="example"
+                  src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+                />
+              }
+            >
+              <Meta
+                title="Europe Street beat"
+                description="www.instagram.com"
+              />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card
+              hoverable
+              cover={
+                <img
+                  alt="example"
+                  src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+                />
+              }
+            >
+              <Meta
+                title="Europe Street beat"
+                description="www.instagram.com"
+              />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card
+              hoverable
+              cover={
+                <img
+                  alt="example"
+                  src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+                />
+              }
+            >
+              <Meta
+                title="Europe Street beat"
+                description="www.instagram.com"
+              />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card
+              hoverable
+              cover={
+                <img
+                  alt="example"
+                  src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+                />
+              }
+            >
+              <Meta
+                title="Europe Street beat"
+                description="www.instagram.com"
+              />
+            </Card>
+          </Col>
+        </Row>
+      </div>
     </Layout>
   );
 };

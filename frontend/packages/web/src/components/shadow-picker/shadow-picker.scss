@@ -1,0 +1,17 @@
+@import "../../assets/variables.scss";
+
+.#{$namespace}-shadow-picker {
+  width: 100%;
+  &-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    min-height: 34px;
+    > span {
+      width: 30%;
+    }
+    > div {
+      flex: 1;
+    }
+  }
+}
