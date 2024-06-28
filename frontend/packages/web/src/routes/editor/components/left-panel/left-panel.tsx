@@ -1,13 +1,18 @@
 import { memo, useMemo } from "react";
-import { Tabs } from "antd";
+import { Tabs, Upload, Button, UploadProps } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+
 import { ComponentData } from "../../typing";
 import { DynamicTag } from "../../../../components/dynamic-tag";
 
 import "./left-panel.scss";
+import { useState } from "@lcp/hooks";
+import { RcFile } from "antd/es/upload";
 
 export interface LeftPanelData {
   title: React.ReactNode;
   key: string;
+  tabKey: string;
   icon?: any;
   components?: ComponentData[];
 }
@@ -18,11 +23,39 @@ export interface LeftPanelProps {
   activeKey?: string;
   onTabChange?: (activeKey: string) => void;
   onItemClick?: (item: ComponentData) => void;
+  onUpload?: (file: RcFile) => void;
 }
 
 const LeftPanel = (props: LeftPanelProps) => {
-  const { prefixCls, data, activeKey, onTabChange, onItemClick } = props;
+  const { prefixCls, data, activeKey, onTabChange, onItemClick, onUpload } =
+    props;
   const prefix = `${prefixCls}-leftpanel`;
+  const [state, setState] = useState({
+    loading: false,
+  });
+
+  const uploadProps: UploadProps = {
+    showUploadList: false,
+    name: "file",
+    action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
+
+    beforeUpload(file) {
+      onUpload && onUpload(file);
+      return false;
+    },
+    onChange(info) {
+      console.log(info.file.status);
+      if (info.file.status === "uploading" && !state.loading) {
+        setState({
+          loading: true,
+        });
+      } else {
+        setState({
+          loading: false,
+        });
+      }
+    },
+  };
 
   const items = useMemo(() => {
     if (data === null || data === undefined) {
@@ -32,27 +65,49 @@ const LeftPanel = (props: LeftPanelProps) => {
       return {
         label: item.title,
         key: item.key,
-        children:
-          item.components &&
-          item.components.map((component) => {
-            return (
-              <div
-                key={component.id}
-                className={`${prefix}__item`}
-                onClick={() => onItemClick && onItemClick(component)}
-              >
-                <DynamicTag type={component.type} props={component.props} />
-              </div>
-            );
-          }),
+        children: (
+          <>
+            {item.tabKey === "img" && (
+              <Upload className={`${prefix}-upload`} {...uploadProps}>
+                <Button
+                  loading={state.loading}
+                  icon={<UploadOutlined />}
+                  block
+                  size="large"
+                  type="primary"
+                >
+                  上传图片
+                </Button>
+              </Upload>
+            )}
+            <div className={`${prefix}-list ${prefix}-list__${item.tabKey}`}>
+              {item.components &&
+                item.components.map((component) => {
+                  return (
+                    <div
+                      key={component.id}
+                      className={`${prefix}-item ${prefix}-item__${item.tabKey}`}
+                      onClick={() => onItemClick && onItemClick(component)}
+                    >
+                      <DynamicTag
+                        type={component.type}
+                        props={component.props}
+                      />
+                    </div>
+                  );
+                })}
+            </div>
+          </>
+        ),
       };
     });
     return result;
-  }, [prefix, data, onItemClick]);
+  }, [prefix, data, state.loading, onItemClick]);
 
   return (
     items && (
       <Tabs
+        centered
         className={prefix}
         activeKey={activeKey}
         items={items}

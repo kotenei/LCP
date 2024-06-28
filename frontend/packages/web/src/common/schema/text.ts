@@ -9,102 +9,101 @@ export const textData: PresetData = {
       id: uuidv4(),
       type: "h2",
       props: {
+        children: "主标题",
         style: {
           ...textStyle,
           fontWeight: "bold",
           fontSize: 30,
         },
-        children: "主标题",
       },
     },
     {
       id: uuidv4(),
       type: "h3",
       props: {
+        children: "楷体副标题",
         style: {
           ...textStyle,
           fontWeight: "bold",
-
           fontFamily: "KaiTi, STKaiti",
           fontSize: 20,
         },
-        children: "楷体副标题",
       },
     },
     {
       id: uuidv4(),
       type: "p",
       props: {
+        children: "正文内容",
         style: {
           ...textStyle,
         },
-        children: "正文内容",
       },
     },
     {
       id: uuidv4(),
       type: "p",
       props: {
+        children: "宋体正文内容",
         style: {
           ...textStyle,
 
           fontFamily: "SimSun, STSong",
         },
-        children: "宋体正文内容",
       },
     },
     {
       id: uuidv4(),
       type: "p",
       props: {
+        children: "Arial Style",
         style: {
           ...textStyle,
 
           fontFamily: "Arial, sans-serif",
         },
-        children: "Arial Style",
       },
     },
     {
       id: uuidv4(),
       type: "p",
       props: {
+        children: "Courier New",
         style: {
           ...textStyle,
 
           fontFamily: "Courier New",
         },
-        children: "Courier New",
       },
     },
     {
       id: uuidv4(),
       type: "p",
       props: {
+        children: "Times New Roman",
         style: {
           ...textStyle,
-
           fontFamily: "Times New Roman",
         },
-        children: "Times New Roman",
       },
     },
     {
       id: uuidv4(),
       type: "p",
       props: {
+        children: "链接内容",
         style: {
           ...textStyle,
           color: "#1890ff",
           textDecoration: "underline",
         },
-        children: "链接内容",
       },
     },
     {
       id: uuidv4(),
       type: "button",
       props: {
+        children: "按钮内容",
         style: {
           ...textStyle,
           color: "#fff",
@@ -114,7 +113,6 @@ export const textData: PresetData = {
           border: "none",
           width: 80,
         },
-        children: "按钮内容",
       },
     },
   ],

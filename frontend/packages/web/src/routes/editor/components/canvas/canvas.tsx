@@ -62,29 +62,31 @@ const Canvas = (props: CanvasProps) => {
                 const style = component.props?.style || {};
 
                 return (
-                  <div
-                    className={wrapperClass}
-                    key={component.id}
-                    style={{
-                      position: style.position,
-                      left: style.left,
-                      top: style.top,
-                      width: style.width,
-                      height: style.height,
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onItemClick && onItemClick(component);
-                    }}
-                  >
-                    <DynamicTag
-                      type={component.type}
-                      props={{
-                        className: `${prefix}-component`,
-                        ...component.props,
+                  component.show && (
+                    <div
+                      className={wrapperClass}
+                      key={component.id}
+                      style={{
+                        position: style.position,
+                        left: style.left,
+                        top: style.top,
+                        width: style.width,
+                        height: style.height,
                       }}
-                    />
-                  </div>
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onItemClick && onItemClick(component);
+                      }}
+                    >
+                      <DynamicTag
+                        type={component.type}
+                        props={{
+                          className: `${prefix}-component`,
+                          ...component.props,
+                        }}
+                      />
+                    </div>
+                  )
                 );
               })}
           </div>

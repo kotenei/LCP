@@ -28,6 +28,7 @@
       &__notext {
         display: inline-block;
         margin: 0 10px 0 0;
+        width: 100%;
       }
 
       &#item-fontWeight {
@@ -37,6 +38,12 @@
       &#item-boxShadow {
         width: 100%;
       }
+
+      // &#item-src {
+      //   > div {
+      //     width: 100%;
+      //   }
+      // }
     }
   }
 }

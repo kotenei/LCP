@@ -1,24 +1,10 @@
 import React, { CSSProperties } from "react";
+import { ComponentData } from "../../routes/editor/typing";
 
 export interface ComponentProps {
   [key: string]: any;
   style?: CSSProperties;
   children?: React.ReactNode;
-}
-
-export interface ComponentData {
-  id: string;
-  type: string;
-  props?: ComponentProps;
-}
-
-export interface TemplateData {
-  id: number;
-  title: string;
-  coverImg: string;
-  author: string;
-  copiedCount: number;
-  components?: ComponentData[];
 }
 
 export interface PresetData {
@@ -37,6 +23,10 @@ export interface PropToForm {
   afterTransform?: (...args: any) => any;
 }
 
-export type PropsToForm = {
+export interface PropsToForm {
+  [key: string]: PropToForm;
+}
+
+export type CSSPropsToForm = {
   [P in keyof CSSProperties]?: PropToForm;
 };

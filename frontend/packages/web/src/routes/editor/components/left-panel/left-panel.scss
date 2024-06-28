@@ -1,19 +1,50 @@
 @import "../../../../assets/variables.scss";
 
 .#{$editor}-leftpanel {
-  &__item {
+  &-list {
+    &__img {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  }
+
+  &-item {
     cursor: pointer;
     text-align: center;
     margin-bottom: 10px;
-    > * {
+    &__text > * {
       margin: 0;
       padding: 0;
       width: auto !important;
       height: auto !important;
       position: static !important;
     }
+
+    &__shape > div {
+      text-align: center;
+      display: inline-block;
+      position: static !important;
+    }
+
+    &__img {
+      width: 50%;
+      margin-bottom: 15px;
+      text-align: center;
+      img {
+        width: 100px;
+        position: static !important;
+      }
+    }
   }
   .ant-tabs-content-holder {
     overflow: auto;
+  }
+
+  &-upload {
+    margin-bottom: 15px;
+    display: block;
+    .ant-upload {
+      width: 100%;
+    }
   }
 }

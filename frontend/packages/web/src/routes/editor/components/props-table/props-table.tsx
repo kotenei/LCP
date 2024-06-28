@@ -1,14 +1,10 @@
 import { HTMLAttributes, memo, useMemo } from "react";
-import { Collapse, Input, Empty } from "antd";
-const { TextArea } = Input;
+import { Collapse, Empty } from "antd";
 
-import {
-  defaultFormItem,
-  mapPropsCategory,
-  mapPropsToForm,
-} from "../../../../common/schema";
+import { mapPropsCategory } from "../../../../common/schema";
+import { componentToFormProps } from "../../../../utils";
 import PropsTableItems from "./props-table-items";
-import { ComponentData, FormProps } from "../../typing";
+import { ComponentData } from "../../typing";
 import "./props-table.scss";
 
 export interface PropsTableProps
@@ -21,47 +17,9 @@ const PropsTable = (props: PropsTableProps) => {
   const { prefixCls, currentComponent, onChange } = props;
   const prefix = `${prefixCls}-props-table`;
 
-  const getAllComponents = (data: ComponentData) => {
-    const components: FormProps[] = [];
-
-    if (data.props) {
-      if (
-        data.props.children != null &&
-        typeof data.props.children === "string"
-      ) {
-        components.push({
-          ...defaultFormItem,
-          key: "children",
-          component: TextArea,
-          extraProps: { rows: 3 },
-          value: data.props.children,
-          afterTransform: (e) => e.target.value,
-        });
-      }
-
-      if (data.props.style) {
-        for (const key in data.props.style) {
-          const item = mapPropsToForm[key as keyof React.CSSProperties];
-          const value = data.props.style[key as keyof React.CSSProperties];
-
-          if (item) {
-            const newItem = {
-              ...item,
-              key,
-              value: item.initalTransform ? item.initalTransform(value) : value,
-            };
-            components.push(newItem);
-          }
-        }
-      }
-    }
-
-    return components;
-  };
-
   const items = useMemo(() => {
     if (currentComponent) {
-      const allComponents = getAllComponents(currentComponent);
+      const allComponents = componentToFormProps(currentComponent.props);
       return mapPropsCategory.map((item) => {
         const components = allComponents.filter((c) => c.category === item.id);
         return {

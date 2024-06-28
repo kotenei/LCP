@@ -46,6 +46,11 @@
     &--active {
       border: 1px solid #1890ff !important;
     }
+
+    > img {
+      max-width: 100%;
+      display: block;
+    }
   }
 
   &-component {

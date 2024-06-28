@@ -52,7 +52,7 @@ const PropsTableItems = (props: PropsTableItems) => {
                       );
                     })}
                 </item.component>
-              </div>
+              </div>   
             </li>
           );
         })}

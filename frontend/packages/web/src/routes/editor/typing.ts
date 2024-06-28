@@ -1,4 +1,3 @@
-import { CSSProperties } from "react";
 import { PropToForm } from "../../common/schema/typing";
 
 export interface ComponentProps {
@@ -10,6 +9,12 @@ export interface ComponentProps {
 export interface ComponentData {
   id: string;
   type: string;
+  name?: string;
+  props?: ComponentProps;
+  show?: boolean;
+}
+
+export interface PageData {
   props?: ComponentProps;
 }
 
@@ -20,6 +25,7 @@ export interface TemplateData {
   author: string;
   copiedCount: number;
   components?: ComponentData[];
+  page?: PageData;
 }
 
 export interface FormProps extends PropToForm {

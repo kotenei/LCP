@@ -2,54 +2,49 @@ import { v4 as uuidv4 } from "uuid";
 import { PresetData } from "./typing";
 import { commonStyle } from "./style";
 
+const COLOR = "#40A9FF";
 const DEFAULT_STYLE = {
   ...commonStyle,
-  left: 0,
-  top: 0,
-  width: 100,
-  height: "",
+  borderWidth: 1,
+  borderStyle: "solid",
+  borderColor: COLOR,
+  backgroundColor: COLOR,
 };
 
-export const imageData: PresetData = {
-  title: "图片",
+export const shapeData: PresetData = {
+  title: "形状",
   components: [
     {
       id: uuidv4(),
-      type: "img",
+      type: "div",
       props: {
-        src: "/images/frame1.png",
         style: {
           ...DEFAULT_STYLE,
+          width: 100,
+          height: 50,
         },
       },
     },
     {
       id: uuidv4(),
-      type: "img",
+      type: "div",
       props: {
-        src: "/images/frame2.png",
         style: {
           ...DEFAULT_STYLE,
+          width: 100,
+          height: 100,
+          borderRadius: 100,
         },
       },
     },
     {
       id: uuidv4(),
-      type: "img",
+      type: "div",
       props: {
-        src: "/images/money.png",
         style: {
           ...DEFAULT_STYLE,
-        },
-      },
-    },
-    {
-      id: uuidv4(),
-      type: "img",
-      props: {
-        src: "/images/bag.png",
-        style: {
-          ...DEFAULT_STYLE,
+          width: 100,
+          height: 100,
         },
       },
     },

@@ -1,4 +1,5 @@
-import { Input, InputNumber, Select, Slider, Radio, ColorPicker } from "antd";
+import { InputNumber, Select, Slider, Radio, ColorPicker } from "antd";
+import TextArea from "antd/es/input/TextArea";
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -7,7 +8,8 @@ import {
 
 import { ShadowPicker } from "../../components/shadow-picker";
 import { IconButton } from "../../components/icon-button";
-import { PropToForm, PropsToForm } from "./typing";
+import { Upload } from "../../components/upload";
+import { CSSPropsToForm, PropsToForm } from "./typing";
 
 export const mapPropsCategory = [
   { id: "1", label: "基本属性" },
@@ -30,13 +32,21 @@ export const mapPropsCategory = [
   // },
 ];
 
-export const defaultFormItem: PropToForm = {
-  label: "文本",
-  component: Input,
-  category: "1",
+export const customPropsToForm: PropsToForm = {
+  children: {
+    label: "文本",
+    component: TextArea,
+    extraProps: { rows: 3 },
+    category: "1",
+    afterTransform: (e) => e.target.value,
+  },
+  src: {
+    component: Upload,
+    category: "1",
+  },
 };
 
-export const mapPropsToForm: PropsToForm = {
+export const mapPropsToForm: CSSPropsToForm = {
   // 基本属性
   fontSize: {
     label: "字号",
@@ -141,17 +151,57 @@ export const mapPropsToForm: PropsToForm = {
       //return color.cleared ? "transparent" : value;
     },
   },
-
+  backgroundImage: {
+    label: "背景图片",
+    component: ColorPicker,
+    category: "1",
+  },
+  backgroundRepeat: {
+    label: "背景重复",
+    component: Select,
+    subComponent: Select.Option,
+    category: "1",
+    options: [
+      { text: "无重复", value: "no-repeat" },
+      { text: "X轴重复", value: "repeat-x" },
+      { text: "Y轴重复", value: "repeat-y" },
+      { text: "全部重复", value: "repeat" },
+    ],
+  },
+  backgroundSize: {
+    label: "背景大小",
+    component: Select,
+    subComponent: Select.Option,
+    category: "1",
+    options: [
+      { text: "默认", value: "" },
+      { text: "自动缩放", value: "contain" },
+      { text: "自动填充", value: "cover" },
+    ],
+  },
   // 尺寸
   height: {
     label: "高度",
     component: InputNumber,
     category: "2",
+    extraProps: { min: 0, max: 100 },
+    afterTransform: (value) => {
+      if (value <= 0) {
+        return "";
+      }
+      return value;
+    },
   },
   width: {
     label: "宽度",
     component: InputNumber,
     category: "2",
+    afterTransform: (value) => {
+      if (value <= 0) {
+        return "";
+      }
+      return value;
+    },
   },
   paddingLeft: {
     label: "左边距",

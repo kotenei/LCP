@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import _ from "lodash-es";
 
 import { getTemplate } from "./editor.actions";
-import { ComponentData, TemplateData } from "./typing";
+import { ComponentData, PageData, TemplateData } from "./typing";
 
 // 定义初始状态的类型
 interface EditorState {
@@ -10,6 +10,7 @@ interface EditorState {
   templateLoading: boolean;
   components?: ComponentData[];
   currentComponent?: ComponentData | null;
+  page?: PageData;
 }
 
 // 初始状态
@@ -18,6 +19,13 @@ const initialState: EditorState = {
   templateLoading: false,
   components: [],
   currentComponent: null,
+  page:{
+    props:{
+      backgroundColor:'',
+      backgroundImage:'',
+      
+    }
+  }
 };
 
 export const editorSlice = createSlice({
@@ -30,28 +38,45 @@ export const editorSlice = createSlice({
     addComponent: (state, action) => {
       state.components?.push(action.payload);
     },
-    updateComponent: (state, action) => {
-      const currentComponent = _.cloneDeep(state.currentComponent);
-      const newComponents = state.components ? [...state.components] : [];
-      const index = newComponents.findIndex(
-        (c) => c.id === currentComponent?.id
-      );
+    deleteComponent: (state, action) => {
+      const id = action.payload;
+      const newComponents = state.components
+        ? state.components.filter((item) => item.id !== id)
+        : [];
 
-      if (currentComponent && currentComponent.props && index >= 0) {
-        const { key, value } = action.payload;
-        if (currentComponent.props[key] != null) {
-          currentComponent.props[key] = value;
-        } else {
-          for (const k in currentComponent.props.style) {
-            if (k === key) {
-              currentComponent.props.style[key] = value;
-              break;
-            }
-          }
-        }
-        newComponents[index] = currentComponent;
-        state.currentComponent = currentComponent;
+      state.components = newComponents;
+      if (state.currentComponent && state.currentComponent.id === id) {
+        state.currentComponent = null;
+      }
+    },
+    updateComponent: (state, action) => {
+      const component = action.payload;
+      const newComponents = state.components ? [...state.components] : [];
+      const index = newComponents.findIndex((c) => c.id === component.id);
+
+      if (index >= 0) {
+        newComponents[index] = component;
         state.components = newComponents;
+        if (
+          state.currentComponent &&
+          state.currentComponent.id === component.id
+        ) {
+          state.currentComponent = component;
+        }
+      }
+    },
+    setDisplay: (state, action) => {
+      const { id, show } = action.payload;
+      const newComponents = state.components ? [...state.components] : [];
+      const index = newComponents.findIndex((c) => c.id === id);
+
+      if (index >= 0) {
+        newComponents[index].show = show;
+        state.components = newComponents;
+      }
+
+      if (state.currentComponent && state.currentComponent.id === id) {
+        state.currentComponent = newComponents[index];
       }
     },
   },
@@ -72,8 +97,12 @@ export const editorSlice = createSlice({
   },
 });
 
-export const { setCurrentComponent, addComponent, updateComponent } =
-  editorSlice.actions;
+export const {
+  setCurrentComponent,
+  addComponent,
+  updateComponent,
+  setDisplay,
+} = editorSlice.actions;
 
 export const editorReducerKey = editorSlice.name;
 

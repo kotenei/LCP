@@ -1,0 +1,30 @@
+@import "../../../../assets/variables.scss";
+
+.#{$editor}-layer-setting {
+  border-radius: 0 !important;
+  &-item {
+    // justify-content: left !important;
+    &__edit {
+      margin-left: 10px;
+      margin-right: 10px;
+      text-align: left;
+      flex: 1;
+    }
+
+    &__label {
+      min-width: 80px;
+      display: inline-block;
+    }
+
+    cursor: pointer;
+
+    &:hover {
+      background-color: #e6f7ff;
+    }
+
+    &--active {
+      // border: 1px solid #1890ff;
+      background: #e6f7ff;
+    }
+  }
+}
