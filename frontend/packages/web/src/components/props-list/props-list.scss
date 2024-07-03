@@ -1,0 +1,40 @@
+@import "../../assets/variables.scss";
+
+.#{$namespace}-props-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    min-height: 34px;
+
+    > span {
+      width: 30%;
+    }
+    > div {
+      flex: 1;
+    }
+
+    .ant-select {
+      width: 100%;
+    }
+
+    &__notext {
+      display: inline-block;
+      margin: 0 10px 0 0;
+    }
+
+    &#item-fontWeight {
+      margin-left: 30%;
+    }
+
+    &#item-boxShadow,
+    &#item-src,
+    &#item-backgroundImage {
+      width: 100%;
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useContext, useMemo } from "react";
 import { Tabs, Upload, Button, UploadProps } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
@@ -8,6 +8,7 @@ import { DynamicTag } from "../../../../components/dynamic-tag";
 import "./left-panel.scss";
 import { useState } from "@lcp/hooks";
 import { RcFile } from "antd/es/upload";
+import EditorContext from "../../editor.context";
 
 export interface LeftPanelData {
   title: React.ReactNode;
@@ -22,17 +23,16 @@ export interface LeftPanelProps {
   data?: LeftPanelData[];
   activeKey?: string;
   onTabChange?: (activeKey: string) => void;
-  onItemClick?: (item: ComponentData) => void;
   onUpload?: (file: RcFile) => void;
 }
 
 const LeftPanel = (props: LeftPanelProps) => {
-  const { prefixCls, data, activeKey, onTabChange, onItemClick, onUpload } =
-    props;
+  const { prefixCls, data, activeKey, onTabChange, onUpload } = props;
   const prefix = `${prefixCls}-leftpanel`;
   const [state, setState] = useState({
     loading: false,
   });
+  const { onItemAdd } = useContext(EditorContext) || {};
 
   const uploadProps: UploadProps = {
     showUploadList: false,
@@ -44,7 +44,6 @@ const LeftPanel = (props: LeftPanelProps) => {
       return false;
     },
     onChange(info) {
-      console.log(info.file.status);
       if (info.file.status === "uploading" && !state.loading) {
         setState({
           loading: true,
@@ -87,7 +86,7 @@ const LeftPanel = (props: LeftPanelProps) => {
                     <div
                       key={component.id}
                       className={`${prefix}-item ${prefix}-item__${item.tabKey}`}
-                      onClick={() => onItemClick && onItemClick(component)}
+                      onClick={() => onItemAdd && onItemAdd(component, false)}
                     >
                       <DynamicTag
                         type={component.type}
@@ -102,7 +101,7 @@ const LeftPanel = (props: LeftPanelProps) => {
       };
     });
     return result;
-  }, [prefix, data, state.loading, onItemClick]);
+  }, [prefix, data, state.loading, onItemAdd]);
 
   return (
     items && (

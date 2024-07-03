@@ -29,6 +29,7 @@ export interface TemplateData {
 }
 
 export interface FormProps extends PropToForm {
+  id: string;
   key: any;
   value?: any;
   eventName?: string;

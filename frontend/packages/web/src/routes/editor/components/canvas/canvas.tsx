@@ -1,10 +1,11 @@
-import { HTMLAttributes, memo } from "react";
+import { HTMLAttributes, memo, useMemo, useContext } from "react";
 import classnames from "classnames";
 import { Space, Button, Tooltip, Spin } from "antd";
 import { UndoOutlined, RedoOutlined, LoadingOutlined } from "@ant-design/icons";
 import "./canvas.scss";
 import { DynamicTag } from "../../../../components/dynamic-tag";
-import { ComponentData } from "../../typing";
+import { ComponentData, PageData } from "../../typing";
+import EditorContext from "../../editor.context";
 
 export interface CanvasProps
   extends LCPWeb.BasicProps<HTMLAttributes<HTMLDivElement>> {
@@ -12,8 +13,8 @@ export interface CanvasProps
   components?: ComponentData[];
   currentComponent?: ComponentData | null;
   loading?: false;
-  onItemClick?: (item: ComponentData) => void;
-  onPageClick?: () => void;
+  page?: PageData;
+  pageActive?: boolean;
 }
 
 const Canvas = (props: CanvasProps) => {
@@ -23,14 +24,27 @@ const Canvas = (props: CanvasProps) => {
     loading,
     currentComponent,
     components,
-    onItemClick,
-    onPageClick,
+    page,
+    pageActive,
+    ...others
   } = props;
   const prefix = `${prefixCls}-canvas`;
   const classString = classnames(prefix, className);
+  const { onItemClick } = useContext(EditorContext) || {};
+
+  const pageStyle = useMemo(() => {
+    if (page && page.props && page.props.style) {
+      const style = {
+        ...page.props.style,
+        backgroundImage: `url(${page.props.style.backgroundImage})`,
+      };
+      return style;
+    }
+    return undefined;
+  }, [page]);
 
   return (
-    <div className={classString}>
+    <div className={classString} {...others}>
       <div className={`${prefix}-header`}>
         <Space size={16}>
           <Tooltip title="撤销">
@@ -50,7 +64,10 @@ const Canvas = (props: CanvasProps) => {
           />
         )}
         <div className={`${prefix}-body__container`}>
-          <div className={`${prefix}-body__content`} onClick={onPageClick}>
+          <div
+            className={`${prefix}-body__content ${pageActive ? "active" : ""}`}
+            style={pageStyle}
+          >
             {components &&
               components.map((component) => {
                 const wrapperClass = classnames({

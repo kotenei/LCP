@@ -3,6 +3,7 @@ import { Layout as ALayout, Button, Space } from "antd";
 import { v4 as uuidv4 } from "uuid";
 import { useState } from "@lcp/hooks";
 import { cloneDeep } from "lodash-es";
+import { RcFile } from "antd/es/upload";
 
 import { useAppDispatch, useAppSelector } from "../../store";
 import { Layout } from "../../components/layout";
@@ -14,13 +15,16 @@ import {
   addComponent,
   updateComponent,
   setCurrentComponent,
+  updatePage,
+  deleteComponent,
+  updateComponents,
 } from "./editor.reducer";
 import { presetData } from "../../common/schema";
 import { ComponentData } from "./typing";
-import "./editor.scss";
-import { RcFile } from "antd/es/upload";
 import { getBase64 } from "../../utils";
 import { commonStyle } from "../../common/schema/style";
+import EditorContext, { EditorContextProps } from "./editor.context";
+import "./editor.scss";
 
 export interface EditorProps
   extends LCPWeb.BasicProps<HTMLAttributes<HTMLDivElement>> {}
@@ -39,9 +43,19 @@ const Editor = (props: EditorProps) => {
     imageUrl: "",
   });
 
-  // useEffect(() => {
-  //   dispatch(getTemplate(1));
-  // }, []);
+  useEffect(() => {
+    const keyup = (e: KeyboardEvent) => {
+      if (e.key === "Delete" && currentComponent) {
+        dispatch(deleteComponent(currentComponent.id));
+      }
+    };
+
+    document.addEventListener("keyup", keyup);
+
+    return () => {
+      document.removeEventListener("keyup", keyup);
+    };
+  }, [currentComponent]);
 
   const onLeftTabChange = (activeKey: string) => {
     setState({
@@ -55,8 +69,11 @@ const Editor = (props: EditorProps) => {
     });
   };
 
-  const onItemActive = (item: ComponentData) => {
+  const onItemClick = (item: ComponentData, changeTab: boolean = true) => {
     dispatch(setCurrentComponent(item));
+    if (changeTab) {
+      onRightTabChange("1");
+    }
   };
 
   const onItemAdd = (item: ComponentData) => {
@@ -116,6 +133,19 @@ const Editor = (props: EditorProps) => {
     }
   };
 
+  const onPageChange = (key: string, value: any) => {
+    dispatch(updatePage({ key, value }));
+  };
+
+  const onCanvasClick = () => {
+    dispatch(setCurrentComponent(null));
+    onRightTabChange("3");
+  };
+
+  const onSort = (components: ComponentData[]) => {
+    dispatch(updateComponents(components));
+  };
+
   const getUpdateComponent = (id: string) => {
     const component = components
       ? components.find((item) => item.id === id)
@@ -139,55 +169,70 @@ const Editor = (props: EditorProps) => {
     return result;
   }, []);
 
+  const contextValue: EditorContextProps = {
+    onItemAdd,
+    onItemClick,
+    onToggle,
+    onNameChange,
+    onPageChange,
+    onPropChange,
+    onSort,
+  };
+
   return (
-    <Layout
-      className={prefixCls}
-      showFooter={false}
-      extra={
-        <Space size={16}>
-          <Button type="primary">预览</Button>
-          <Button type="primary">保存</Button>
-        </Space>
-      }
-    >
-      <ALayout className={`${prefixCls}-container`}>
-        <Sider className={`${prefixCls}-container__left`} width={350}>
-          {state.imageUrl ? (
-            <img src={state.imageUrl} alt="avatar" style={{ width: "100%" }} />
-          ) : null}
-          <LeftPanel
-            prefixCls={prefixCls}
-            activeKey={state.leftTabKey}
-            data={leftPanelData}
-            onTabChange={onLeftTabChange}
-            onItemClick={onItemAdd}
-            onUpload={onUpload}
-          />
-        </Sider>
-        <Content className={`${prefixCls}-container__main`}>
-          <Canvas
-            prefixCls={prefixCls}
-            components={components}
-            currentComponent={currentComponent}
-            onItemClick={onItemActive}
-          />
-        </Content>
-        <Sider className={`${prefixCls}-container__right`} width={350}>
-          <RightPanel
-            prefixCls={prefixCls}
-            activeKey={state.rightTabKey}
-            currentComponent={currentComponent}
-            components={components}
-            page={page}
-            onTabChange={onRightTabChange}
-            onPropChange={onPropChange}
-            onItemClick={onItemActive}
-            onToggle={onToggle}
-            onNameChange={onNameChange}
-          />
-        </Sider>
-      </ALayout>
-    </Layout>
+    <EditorContext.Provider value={contextValue}>
+      <Layout
+        className={prefixCls}
+        showFooter={false}
+        extra={
+          <Space size={16}>
+            <Button type="primary">预览</Button>
+            <Button type="primary">保存</Button>
+          </Space>
+        }
+      >
+        <ALayout className={`${prefixCls}-container`}>
+          <Sider className={`${prefixCls}-container__left`} width={350}>
+            {state.imageUrl ? (
+              <img
+                src={state.imageUrl}
+                alt="avatar"
+                style={{ width: "100%" }}
+              />
+            ) : null}
+            <LeftPanel
+              prefixCls={prefixCls}
+              activeKey={state.leftTabKey}
+              data={leftPanelData}
+              onTabChange={onLeftTabChange}
+              onUpload={onUpload}
+            />
+          </Sider>
+          <Content
+            className={`${prefixCls}-container__main`}
+            onClick={onCanvasClick}
+          >
+            <Canvas
+              prefixCls={prefixCls}
+              components={components}
+              currentComponent={currentComponent}
+              page={page}
+              pageActive={state.rightTabKey === "3"}
+            />
+          </Content>
+          <Sider className={`${prefixCls}-container__right`} width={350}>
+            <RightPanel
+              prefixCls={prefixCls}
+              activeKey={state.rightTabKey}
+              currentComponent={currentComponent}
+              components={components}
+              page={page}
+              onTabChange={onRightTabChange}
+            />
+          </Sider>
+        </ALayout>
+      </Layout>
+    </EditorContext.Provider>
   );
 };
 

@@ -4,6 +4,7 @@ import {
   BoldOutlined,
   ItalicOutlined,
   UnderlineOutlined,
+  FileImageOutlined,
 } from "@ant-design/icons";
 
 import { ShadowPicker } from "../../components/shadow-picker";
@@ -148,13 +149,22 @@ export const mapPropsToForm: CSSPropsToForm = {
     extraProps: { allowClear: true },
     afterTransform: (color, value) => {
       return value;
-      //return color.cleared ? "transparent" : value;
     },
   },
   backgroundImage: {
-    label: "背景图片",
-    component: ColorPicker,
+    // label: "背景图片",
+    component: Upload,
     category: "1",
+    extraProps: {
+      dragger: true,
+      remove: true,
+      draggerContent: (
+        <>
+          <FileImageOutlined style={{ fontSize: 32 }} />
+          上传背景图片
+        </>
+      ),
+    },
   },
   backgroundRepeat: {
     label: "背景重复",
@@ -184,7 +194,7 @@ export const mapPropsToForm: CSSPropsToForm = {
     label: "高度",
     component: InputNumber,
     category: "2",
-    extraProps: { min: 0, max: 100 },
+    extraProps: { min: 0 },
     afterTransform: (value) => {
       if (value <= 0) {
         return "";
@@ -196,6 +206,7 @@ export const mapPropsToForm: CSSPropsToForm = {
     label: "宽度",
     component: InputNumber,
     category: "2",
+    extraProps: { min: 0 },
     afterTransform: (value) => {
       if (value <= 0) {
         return "";

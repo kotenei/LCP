@@ -27,6 +27,11 @@
       background-color: #fff;
       height: 560px;
       position: relative;
+      border: 1px solid transparent;
+
+      &.active {
+        border: 1px solid #1890ff;
+      }
     }
   }
   &-loading {

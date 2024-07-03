@@ -5,7 +5,12 @@ import {
   Upload as AntUpload,
   UploadProps as AntUploadProps,
 } from "antd";
-import { UploadOutlined, ScissorOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  ScissorOutlined,
+  FileImageOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { RcFile } from "antd/es/upload";
 import { useState } from "@lcp/hooks";
 
@@ -13,10 +18,15 @@ import UploadCropper from "./upload-cropper";
 import { getBase64 } from "../../utils";
 import "./upload.scss";
 
+const { Dragger } = AntUpload;
+
 export interface UploadProps
   extends LCPWeb.BasicProps<HTMLAttributes<HTMLDivElement>, "onChange"> {
   action?: string;
   value?: string;
+  dragger?: boolean;
+  draggerContent?: React.ReactNode;
+  remove?: boolean;
   onChange?: (value: string) => void;
 }
 
@@ -26,6 +36,9 @@ const Upload = (props: UploadProps) => {
     className,
     value,
     action,
+    dragger = false,
+    draggerContent,
+    remove = false,
     onChange,
   } = props;
 
@@ -48,7 +61,6 @@ const Upload = (props: UploadProps) => {
       return false;
     },
     onChange(info) {
-      console.log(info.file.status);
       if (info.file.status === "uploading" && !state.loading) {
         setState({
           loading: true,
@@ -63,47 +75,79 @@ const Upload = (props: UploadProps) => {
 
   return (
     <div className={classString}>
-      <div
-        className={`${prefixCls}-preview`}
-        style={
-          value
-            ? {
-                backgroundRepeat: `no-repeat`,
-                backgroundImage: `url(${value})`,
-                backgroundSize: "contain",
-                backgroundPosition: "center",
-              }
-            : undefined
-        }
-      ></div>
-      <div className={`${prefixCls}-control`}>
-        <AntUpload {...uploadProps}>
-          <Button icon={<UploadOutlined />} loading={state.loading}>
-            更换图片
-          </Button>
-        </AntUpload>
-        <Button
-          icon={<ScissorOutlined />}
-          style={{ margin: "8px 0" }}
-          disabled={state.loading}
-          onClick={() => {
-            setState({ open: true });
-          }}
-        >
-          裁剪图片
-        </Button>
+      {dragger && !value ? (
+        <Dragger className={`${prefixCls}-dragger`} {...uploadProps}>
+          {draggerContent ? (
+            draggerContent
+          ) : (
+            <>
+              <FileImageOutlined style={{ fontSize: 32 }} />
+              上传图片
+            </>
+          )}
+        </Dragger>
+      ) : (
+        <>
+          <div
+            className={`${prefixCls}-preview`}
+            style={
+              value
+                ? {
+                    backgroundRepeat: `no-repeat`,
+                    backgroundImage: `url(${value})`,
+                    backgroundSize: "contain",
+                    backgroundPosition: "center",
+                  }
+                : undefined
+            }
+          ></div>
+          <div className={`${prefixCls}-control`}>
+            <AntUpload {...uploadProps}>
+              <Button icon={<UploadOutlined />} loading={state.loading}>
+                更换图片
+              </Button>
+            </AntUpload>
+            <Button
+              icon={<ScissorOutlined />}
+              style={{ margin: "8px 0" }}
+              disabled={state.loading}
+              onClick={() => {
+                setState({ open: true });
+              }}
+            >
+              裁剪图片
+            </Button>
+            {remove && value && (
+              <Button
+                icon={<DeleteOutlined />}
+                disabled={state.loading}
+                onClick={() => {
+                  onChange && onChange("");
+                }}
+              >
+                删除图片
+              </Button>
+            )}
 
-        <UploadCropper
-          prefixCls={prefixCls}
-          open={state.open}
-          imgUrl={value}
-          onCancel={() => {
-            setState({
-              open: false,
-            });
-          }}
-        />
-      </div>
+            <UploadCropper
+              prefixCls={prefixCls}
+              open={state.open}
+              imgUrl={value}
+              onCancel={() => {
+                setState({
+                  open: false,
+                });
+              }}
+              onOK={(blob) => {
+                getBase64(blob, (url) => {
+                  onChange && onChange(url);
+                  setState({ open: false });
+                });
+              }}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

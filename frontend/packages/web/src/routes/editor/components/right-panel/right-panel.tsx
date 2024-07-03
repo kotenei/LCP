@@ -1,8 +1,7 @@
-import { HTMLAttributes, memo, useEffect } from "react";
+import { HTMLAttributes, memo } from "react";
 import { Tabs } from "antd";
-import { useState } from "@lcp/hooks";
 
-import { PropsTable } from "../props-table";
+import { PropsSetting } from "../props-setting";
 import { LayerSetting } from "../layer-setting";
 import { ViewSetting } from "../view-setting";
 import { ComponentData, PageData } from "../../typing";
@@ -14,10 +13,6 @@ export interface RightPanelProps
   currentComponent?: ComponentData | null;
   page?: PageData;
   onTabChange?: (activeKey: string) => void;
-  onPropChange?: (key: string, value: any) => void;
-  onItemClick?: (item: ComponentData) => void;
-  onToggle?: (id: string, show: boolean) => void;
-  onNameChange?: (id: string, name: string) => void;
 }
 
 const RightPanel = (props: RightPanelProps) => {
@@ -28,13 +23,7 @@ const RightPanel = (props: RightPanelProps) => {
     components,
     page,
     onTabChange,
-    onPropChange,
-    onItemClick,
-    onToggle,
-    onNameChange,
   } = props;
-  const [staet, setState] = useState({});
-
   return (
     <Tabs
       type="card"
@@ -44,10 +33,9 @@ const RightPanel = (props: RightPanelProps) => {
           label: "属性设置",
           key: "1",
           children: (
-            <PropsTable
+            <PropsSetting
               prefixCls={prefixCls}
               currentComponent={currentComponent}
-              onChange={onPropChange}
             />
           ),
         },
@@ -59,22 +47,13 @@ const RightPanel = (props: RightPanelProps) => {
               prefixCls={prefixCls}
               components={components}
               currentComponent={currentComponent}
-              onItemClick={onItemClick}
-              onToggle={onToggle}
-              onNameChange={onNameChange}
             />
           ),
         },
         {
           label: "页面设置",
           key: "3",
-          children: (
-            <ViewSetting
-              prefixCls={prefixCls}
-              page={page}
-              onChange={onPropChange}
-            />
-          ),
+          children: <ViewSetting prefixCls={prefixCls} page={page} />,
         },
       ]}
       onChange={onTabChange}

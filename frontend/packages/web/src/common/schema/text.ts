@@ -112,6 +112,7 @@ export const textData: PresetData = {
           padding: "8px",
           border: "none",
           width: 80,
+          cursor: "pointer",
         },
       },
     },

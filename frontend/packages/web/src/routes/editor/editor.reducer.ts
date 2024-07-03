@@ -19,13 +19,17 @@ const initialState: EditorState = {
   templateLoading: false,
   components: [],
   currentComponent: null,
-  page:{
-    props:{
-      backgroundColor:'',
-      backgroundImage:'',
-      
-    }
-  }
+  page: {
+    props: {
+      style: {
+        backgroundColor: "",
+        backgroundImage: "",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "contain",
+        height: 530,
+      },
+    },
+  },
 };
 
 export const editorSlice = createSlice({
@@ -65,6 +69,9 @@ export const editorSlice = createSlice({
         }
       }
     },
+    updateComponents: (state, action) => {
+      state.components = action.payload;
+    },
     setDisplay: (state, action) => {
       const { id, show } = action.payload;
       const newComponents = state.components ? [...state.components] : [];
@@ -78,6 +85,14 @@ export const editorSlice = createSlice({
       if (state.currentComponent && state.currentComponent.id === id) {
         state.currentComponent = newComponents[index];
       }
+    },
+    updatePage: (state, action) => {
+      const { key, value } = action.payload;
+      const newPageData = { ...state.page };
+      if (newPageData.props && newPageData.props.style) {
+        newPageData.props.style[key] = value;
+      }
+      state.page = newPageData;
     },
   },
   extraReducers: (builder) => {
@@ -101,7 +116,10 @@ export const {
   setCurrentComponent,
   addComponent,
   updateComponent,
+  updateComponents,
   setDisplay,
+  updatePage,
+  deleteComponent,
 } = editorSlice.actions;
 
 export const editorReducerKey = editorSlice.name;

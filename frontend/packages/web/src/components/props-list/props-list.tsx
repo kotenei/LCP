@@ -1,27 +1,27 @@
 import { HTMLAttributes, memo } from "react";
-import { FormProps } from "../../typing";
+import { FormProps } from "../../routes/editor/typing";
+import "./props-list.scss";
 
-export interface PropsTableItems
+export interface PropsList
   extends LCPWeb.BasicProps<HTMLAttributes<HTMLUListElement>, "onChange"> {
   data?: FormProps[];
   onChange?: (key: string, value: any) => void;
 }
 
-const PropsTableItems = (props: PropsTableItems) => {
-  const { prefixCls, data, onChange } = props;
-  const prefix = `${prefixCls}-items`;
+const PropsList = (props: PropsList) => {
+  const { prefixCls = "lcp-web-props-list", data, onChange } = props;
 
   return (
-    <ul className={prefix}>
+    <ul className={prefixCls}>
       {data &&
         data.map((item) => {
           return (
             <li
-              id={`item-${item.key}`}
-              className={`${prefix}-item ${
-                !item.label ? `${prefix}-item__notext` : ""
-              }`}
               key={item.key}
+              id={`item-${item.key}`}
+              className={`${prefixCls}-item ${
+                !item.label ? `${prefixCls}-item__notext` : ""
+              }`}
             >
               <span>{item.label ? `${item.label}:` : ""}</span>
               <div>
@@ -52,7 +52,7 @@ const PropsTableItems = (props: PropsTableItems) => {
                       );
                     })}
                 </item.component>
-              </div>   
+              </div>
             </li>
           );
         })}
@@ -60,4 +60,4 @@ const PropsTableItems = (props: PropsTableItems) => {
   );
 };
 
-export default memo(PropsTableItems);
+export default memo(PropsList);

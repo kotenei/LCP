@@ -1,21 +1,22 @@
-import { HTMLAttributes, memo, useMemo } from "react";
+import { HTMLAttributes, memo, useContext, useMemo } from "react";
 import { Collapse, Empty } from "antd";
 
 import { mapPropsCategory } from "../../../../common/schema";
 import { componentToFormProps } from "../../../../utils";
-import PropsTableItems from "./props-table-items";
+import { PropsList } from "../../../../components/props-list";
 import { ComponentData } from "../../typing";
-import "./props-table.scss";
+import "./props-setting.scss";
+import EditorContext from "../../editor.context";
 
-export interface PropsTableProps
+export interface PropsSettingProps
   extends LCPWeb.BasicProps<HTMLAttributes<HTMLDivElement>, "onChange"> {
   currentComponent?: ComponentData | null;
-  onChange?: (key: string, value: any) => void;
 }
 
-const PropsTable = (props: PropsTableProps) => {
-  const { prefixCls, currentComponent, onChange } = props;
-  const prefix = `${prefixCls}-props-table`;
+const PropsSetting = (props: PropsSettingProps) => {
+  const { prefixCls, currentComponent } = props;
+  const prefix = `${prefixCls}-props-setting`;
+  const { onPropChange } = useContext(EditorContext) || {};
 
   const items = useMemo(() => {
     if (currentComponent) {
@@ -25,20 +26,13 @@ const PropsTable = (props: PropsTableProps) => {
         return {
           key: item.id,
           label: item.label,
-          children: (
-            <PropsTableItems
-              key={item.id}
-              prefixCls={prefix}
-              data={components}
-              onChange={onChange}
-            />
-          ),
+          children: <PropsList data={components} onChange={onPropChange} />,
         };
       });
     } else {
       return [];
     }
-  }, [prefix, currentComponent, onChange]);
+  }, [prefix, currentComponent, onPropChange]);
 
   return items.length ? (
     <Collapse className={prefix} items={items} defaultActiveKey={["1"]} />
@@ -47,4 +41,4 @@ const PropsTable = (props: PropsTableProps) => {
   );
 };
 
-export default memo(PropsTable);
+export default memo(PropsSetting);

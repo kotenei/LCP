@@ -1,28 +1,26 @@
-import { HTMLAttributes, memo } from "react";
+import { HTMLAttributes, memo, useContext } from "react";
 
-import { PropsTableItems } from "../props-table";
+import { PropsList } from "../../../../components/props-list";
 import { componentToFormProps } from "../../../../utils";
 import { PageData } from "../../typing";
+
+import "./view-setting.scss";
+import EditorContext from "../../editor.context";
 
 export interface ViewSetting
   extends LCPWeb.BasicProps<HTMLAttributes<HTMLElement>, "onChange"> {
   page?: PageData;
-  onChange?: (key: string, value: any) => void;
 }
 
 const ViewSetting = (props: ViewSetting) => {
-  const { prefixCls, page, onChange } = props;
-  const prefix = `${prefixCls}-viewsetting`;
-
+  const { prefixCls, page } = props;
+  const { onPageChange } = useContext(EditorContext) || {};
+  const prefix = `${prefixCls}-view-setting`;
   const formPropsData = componentToFormProps(page?.props);
 
   return (
     <div className={prefix}>
-      <PropsTableItems
-        prefixCls={prefix}
-        data={formPropsData}
-        onChange={onChange}
-      />
+      <PropsList data={formPropsData} onChange={onPageChange} />
     </div>
   );
 };

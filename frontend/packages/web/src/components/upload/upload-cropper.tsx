@@ -4,40 +4,57 @@ import Cropper from "cropperjs";
 
 import "cropperjs/dist/cropper.css";
 
+export interface CropperData {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface UploadCropperProps
   extends LCPWeb.BasicProps<HTMLAttributes<HTMLDivElement>> {
   open?: boolean;
   imgUrl?: string;
+  onOK?: (blob: Blob) => void;
   onCancel?: () => void;
 }
 
 const UploadCropper = (props: UploadCropperProps) => {
-  const { prefixCls, open, imgUrl, onCancel } = props;
+  const { prefixCls, open, imgUrl, onCancel, onOK } = props;
   const imgRef = useRef(null);
+  const cropperData = useRef<any>({});
+  const cropper = useRef<any>(null);
 
   useEffect(() => {
-    let cropper: Cropper;
     if (imgRef.current && open) {
-      cropper = new Cropper(imgRef.current, {
+      cropper.current = new Cropper(imgRef.current, {
         crop(event) {
-          //   console.log(event.detail.x);
-          //   console.log(event.detail.y);
-          //   console.log(event.detail.width);
-          //   console.log(event.detail.height);
-          //   console.log(event.detail.rotate);
-          //   console.log(event.detail.scaleX);
-          //   console.log(event.detail.scaleY);
+          const { x, y, width, height } = event.detail;
+          cropperData.current = {
+            x: Math.floor(x),
+            y: Math.floor(y),
+            width: Math.floor(width),
+            height: Math.floor(height),
+          };
         },
       });
     }
     return () => {
-      if (cropper) {
-        cropper.destroy();
+      if (cropper.current) {
+        cropper.current.destroy();
       }
     };
   }, [open]);
 
-  const onOK = () => {};
+  const onConfirm = () => {
+    if (cropper.current) {
+      cropper.current.getCroppedCanvas().toBlob((blob: Blob) => {
+        if (blob && onOK) {
+          onOK(blob);
+        }
+      });
+    }
+  };
 
   return (
     <Modal
@@ -45,18 +62,11 @@ const UploadCropper = (props: UploadCropperProps) => {
       className={`${prefixCls}-cropper`}
       title="剪裁图片"
       open={open}
+      maskClosable={false}
       width={520}
       cancelText="取消"
       okText="确定"
-      //   styles={{
-      //     header: {
-      //       borderBottom: "1px solid #f0f0f0",
-      //     },
-      //     footer: {
-      //       borderTop: "1px solid #f0f0f0",
-      //     },
-      //   }}
-      onOk={onOK}
+      onOk={onConfirm}
       onCancel={onCancel}
     >
       <div className={`${prefixCls}-cropper-container`}>
