@@ -27,7 +27,7 @@ export const commonStyle: CSSProperties = {
 };
 
 export const textStyle: CSSProperties = {
-  fontSize: "14px",
+  fontSize: 14,
   fontFamily: "",
   fontWeight: "normal",
   fontStyle: "normal",

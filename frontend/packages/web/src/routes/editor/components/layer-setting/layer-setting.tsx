@@ -53,7 +53,6 @@ const LayerSetting = (props: LayerSettingProps) => {
   });
 
   const sort = (dragIndex: number, dropIndex?: number) => {
-    console.log(dragIndex, dropIndex);
     if (dragIndex !== dropIndex && dropIndex !== undefined) {
       const newComponents = arrayMoveImmutable(
         components || [],

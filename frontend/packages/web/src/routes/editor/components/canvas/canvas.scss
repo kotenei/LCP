@@ -28,6 +28,7 @@
       height: 560px;
       position: relative;
       border: 1px solid transparent;
+      overflow: hidden;
 
       &.active {
         border: 1px solid #1890ff;
@@ -50,6 +51,11 @@
     }
     &--active {
       border: 1px solid #1890ff !important;
+      z-index: 1;
+
+      .#{$editor}-canvas-resizers {
+        display: block;
+      }
     }
 
     > img {
@@ -60,5 +66,41 @@
 
   &-component {
     position: static !important;
+  }
+
+  &-resizers {
+    display: none;
+    &__resizer {
+      width: 10px;
+      height: 10px;
+      // border-radius: 50%;
+      position: absolute;
+      border: 1px solid #1890ff !important;
+      background: #fff;
+
+      &.topLeft {
+        left: -5px;
+        top: -5px;
+        cursor: nwse-resize;
+      }
+
+      &.topRight {
+        right: -5px;
+        top: -5px;
+        cursor: nesw-resize;
+      }
+
+      &.bottomLeft {
+        left: -5px;
+        bottom: -5px;
+        cursor: nesw-resize;
+      }
+
+      &.bottomRight {
+        right: -5px;
+        bottom: -5px;
+        cursor: nwse-resize;
+      }
+    }
   }
 }

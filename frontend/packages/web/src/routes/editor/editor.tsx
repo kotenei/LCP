@@ -87,14 +87,22 @@ const Editor = (props: EditorProps) => {
 
   const onUpload = (file: RcFile) => {
     getBase64(file, (url) => {
-      onItemAdd({
-        id: uuidv4(),
-        type: "img",
-        props: {
-          src: url,
-          style: { ...commonStyle, width: "", height: "", left: 0, top: 0 },
-        },
-      });
+      const img = new Image();
+      img.src = url;
+      img.onload = () => {
+        let width = img.width;
+        if (width > 300) {
+          width = 300;
+        }
+        onItemAdd({
+          id: uuidv4(),
+          type: "img",
+          props: {
+            src: url,
+            style: { ...commonStyle, width, height: "", left: 0, top: 0 },
+          },
+        });
+      };
     });
   };
 
@@ -144,6 +152,44 @@ const Editor = (props: EditorProps) => {
 
   const onSort = (components: ComponentData[]) => {
     dispatch(updateComponents(components));
+  };
+
+  const onPositionUpdate = (position: {
+    left: number;
+    top: number;
+    id: string;
+  }) => {
+    const { left, top, id } = position;
+    const component = components?.find((item) => item.id === id);
+    if (component) {
+      const newComponent = cloneDeep(component);
+      if (newComponent.props && newComponent.props.style) {
+        newComponent.props.style.left = left;
+        newComponent.props.style.top = top;
+        dispatch(updateComponent(newComponent));
+      }
+    }
+  };
+
+  const onSizeUpdate = (size: {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+    id: string;
+  }) => {
+    const { left, top, width, height, id } = size;
+    const component = components?.find((item) => item.id === id);
+    if (component) {
+      const newComponent = cloneDeep(component);
+      if (newComponent.props && newComponent.props.style) {
+        newComponent.props.style.left = left;
+        newComponent.props.style.top = top;
+        newComponent.props.style.width = width;
+        newComponent.props.style.height = height;
+        dispatch(updateComponent(newComponent));
+      }
+    }
   };
 
   const getUpdateComponent = (id: string) => {
@@ -218,6 +264,8 @@ const Editor = (props: EditorProps) => {
               currentComponent={currentComponent}
               page={page}
               pageActive={state.rightTabKey === "3"}
+              onPositionUpdate={onPositionUpdate}
+              onSizeUpdate={onSizeUpdate}
             />
           </Content>
           <Sider className={`${prefixCls}-container__right`} width={350}>
