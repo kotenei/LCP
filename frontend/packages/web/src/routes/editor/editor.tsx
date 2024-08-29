@@ -1,7 +1,8 @@
 import { HTMLAttributes, memo, useEffect, useMemo } from "react";
 import { Layout as ALayout, Button, Space } from "antd";
 import { v4 as uuidv4 } from "uuid";
-import { useState } from "@lcp/hooks";
+import { useHotKey, useState } from "@lcp/hooks";
+import { getBase64 } from "@lcp/utils";
 import { cloneDeep } from "lodash-es";
 import { RcFile } from "antd/es/upload";
 
@@ -16,12 +17,11 @@ import {
   updateComponent,
   setCurrentComponent,
   updatePage,
-  deleteComponent,
   updateComponents,
 } from "./editor.reducer";
 import { presetData } from "../../common/schema";
 import { ComponentData } from "./typing";
-import { getBase64 } from "../../utils";
+import { useInitHotKeys } from "../../hooks";
 import { commonStyle } from "../../common/schema/style";
 import EditorContext, { EditorContextProps } from "./editor.context";
 import "./editor.scss";
@@ -42,20 +42,7 @@ const Editor = (props: EditorProps) => {
     currentElement: null,
     imageUrl: "",
   });
-
-  useEffect(() => {
-    const keyup = (e: KeyboardEvent) => {
-      if (e.key === "Delete" && currentComponent) {
-        dispatch(deleteComponent(currentComponent.id));
-      }
-    };
-
-    document.addEventListener("keyup", keyup);
-
-    return () => {
-      document.removeEventListener("keyup", keyup);
-    };
-  }, [currentComponent]);
+  useInitHotKeys();
 
   const onLeftTabChange = (activeKey: string) => {
     setState({
@@ -77,10 +64,7 @@ const Editor = (props: EditorProps) => {
   };
 
   const onItemAdd = (item: ComponentData) => {
-    const len = components?.length || 0;
     const newItem = cloneDeep(item);
-    newItem.id = uuidv4();
-    newItem.name = `图层${len + 1}`;
     newItem.show = true;
     dispatch(addComponent(newItem));
   };

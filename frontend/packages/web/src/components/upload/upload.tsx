@@ -13,9 +13,9 @@ import {
 } from "@ant-design/icons";
 import { RcFile } from "antd/es/upload";
 import { useState } from "@lcp/hooks";
+import { getBase64 } from "@lcp/utils";
 
 import UploadCropper from "./upload-cropper";
-import { getBase64 } from "../../utils";
 import "./upload.scss";
 
 const { Dragger } = AntUpload;

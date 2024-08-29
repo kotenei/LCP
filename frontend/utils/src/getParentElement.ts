@@ -1,4 +1,4 @@
-export const getParentElement = (element: HTMLElement, className: string) => {
+const getParentElement = (element: HTMLElement, className: string) => {
   while (element) {
     if (element.classList && element.classList.contains(className)) {
       return element;
@@ -6,3 +6,5 @@ export const getParentElement = (element: HTMLElement, className: string) => {
     element = element.parentElement as HTMLElement;
   }
 };
+
+export default getParentElement;

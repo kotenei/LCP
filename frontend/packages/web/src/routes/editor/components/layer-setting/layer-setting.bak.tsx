@@ -16,7 +16,7 @@ import {
 import { arrayMoveImmutable } from "array-move";
 
 import { useClickOutside, useState } from "@lcp/hooks";
-import { getParentElement } from "../../../../utils";
+import { getParentElement } from "@lcp/utils";
 import { ComponentData } from "../../typing";
 import "./layer-setting.scss";
 import EditorContext from "../../editor.context";

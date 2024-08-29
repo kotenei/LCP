@@ -9,11 +9,12 @@ import {
 import classnames from "classnames";
 import { Space, Button, Tooltip, Spin } from "antd";
 import { UndoOutlined, RedoOutlined, LoadingOutlined } from "@ant-design/icons";
-import "./canvas.scss";
+import { getParentElement } from "@lcp/utils";
+
 import { DynamicTag } from "../../../../components/dynamic-tag";
 import { ComponentData, PageData } from "../../typing";
 import EditorContext from "../../editor.context";
-import { getParentElement } from "../../../../utils";
+import "./canvas.scss";
 
 export interface CanvasProps
   extends LCPWeb.BasicProps<HTMLAttributes<HTMLDivElement>> {
@@ -155,7 +156,7 @@ const Canvas = (props: CanvasProps) => {
     document.addEventListener("mouseup", onMouseUp);
   };
 
-  const onStartResize = (type: string) => (e: MouseEvent) => {
+  const onStartResize = (type: string) => (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     const target = e.target as HTMLElement;

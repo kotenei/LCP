@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import _ from "lodash-es";
-
+import { cloneDeep } from "lodash-es";
+import { v4 as uuidv4 } from "uuid";
 import { getTemplate } from "./editor.actions";
 import { ComponentData, PageData, TemplateData } from "./typing";
 
@@ -11,6 +11,7 @@ interface EditorState {
   components?: ComponentData[];
   currentComponent?: ComponentData | null;
   page?: PageData;
+  copiedComponent?: ComponentData | null;
 }
 
 // 初始状态
@@ -30,6 +31,7 @@ const initialState: EditorState = {
       },
     },
   },
+  copiedComponent: null,
 };
 
 export const editorSlice = createSlice({
@@ -39,8 +41,23 @@ export const editorSlice = createSlice({
     setCurrentComponent: (state, action) => {
       state.currentComponent = action.payload;
     },
+    setCopiedComponent: (state, action) => {
+      state.copiedComponent = action.payload;
+    },
+    pasteCopiedComponent: (state, action) => {
+      if (action.payload) {
+        const newItem = cloneDeep(action.payload);
+        action.payload = newItem;
+        editorSlice.caseReducers.addComponent(state, action);
+      }
+    },
     addComponent: (state, action) => {
-      state.components?.push(action.payload);
+      const len = state.components?.length || 0;
+      const newItem = action.payload;
+      newItem.id = uuidv4();
+      newItem.name = `图层${len + 1}`;
+      newItem.show = true;
+      state.components?.push(newItem);
     },
     deleteComponent: (state, action) => {
       const id = action.payload;
@@ -120,6 +137,8 @@ export const {
   setDisplay,
   updatePage,
   deleteComponent,
+  setCopiedComponent,
+  pasteCopiedComponent,
 } = editorSlice.actions;
 
 export const editorReducerKey = editorSlice.name;
