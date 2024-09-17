@@ -33,8 +33,9 @@ const { Sider, Content } = ALayout;
 
 const Editor = (props: EditorProps) => {
   const { prefixCls = "lcp-web-editor" } = props;
-  const { template, templateLoading, components, currentComponent, page } =
-    useAppSelector((state) => state.editor);
+  const { components, currentComponent, page } = useAppSelector(
+    (state) => state.editor
+  );
   const dispatch = useAppDispatch();
   const [state, setState] = useState({
     leftTabKey: "1",
@@ -42,7 +43,7 @@ const Editor = (props: EditorProps) => {
     currentElement: null,
     imageUrl: "",
   });
-  useInitHotKeys();
+  useInitHotKeys("#editorContainer");
 
   const onLeftTabChange = (activeKey: string) => {
     setState({

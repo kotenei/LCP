@@ -1,12 +1,14 @@
 import { useHotKey } from "@lcp/hooks";
 import { message } from "antd";
 import { HotkeysEvent, KeyHandler } from "hotkeys-js";
+import { cloneDeep } from "lodash-es";
 
 import { useAppDispatch, useAppSelector } from "../store";
 import {
   setCopiedComponent,
   pasteCopiedComponent,
   deleteComponent,
+  updateComponent,
 } from "../routes/editor/editor.reducer";
 
 type MoveDirection = "up" | "down" | "left" | "right";
@@ -18,27 +20,56 @@ const wrap = (callback: KeyHandler) => {
   };
 };
 
-export default function useInitHotKeys() {
-  const { currentComponent, copiedComponent } = useAppSelector(
+export default function useInitHotKeys(containerSelector: string) {
+  const { currentComponent, copiedComponent, page } = useAppSelector(
     (state) => state.editor
   );
   const dispatch = useAppDispatch();
+  const elmContainer = document.querySelector(containerSelector) as HTMLElement;
   const move = (direction: MoveDirection) => {
-    return () => {
-      switch (direction) {
-        case "up":
-          console.log("asdf");
-          break;
-        case "down":
-          break;
-        case "left":
-          break;
-        case "right":
-          break;
-        default:
-          break;
-      }
-    };
+    const step = 1;
+    const contentWidth = elmContainer.offsetWidth;
+    const contentHeight = elmContainer.offsetHeight;
+    const orgTop = currentComponent?.props?.style?.top || 0;
+    const orgLeft = currentComponent?.props?.style?.left || 0;
+    let width = currentComponent?.props?.style?.width || 0;
+    let height = currentComponent?.props?.style?.height || 0;
+    let newTop = parseInt(orgTop);
+    let newLeft = parseInt(orgLeft);
+
+    switch (direction) {
+      case "up":
+        newTop = orgTop - step;
+        break;
+      case "down":
+        newTop = orgTop + step;
+        break;
+      case "left":
+        newLeft = orgLeft - step;
+        break;
+      case "right":
+        newLeft = orgLeft + step;
+        break;
+      default:
+        break;
+    }
+    const tmpWidth = newLeft + width;
+    const tmpHeight = newTop + height;
+    if (tmpWidth > contentWidth - 2) {
+      newLeft -= step;
+    }
+    if (tmpHeight > contentHeight - 2) {
+      newTop -= step;
+    }
+    newTop = Math.max(newTop, 0);
+    newLeft = Math.max(newLeft, 0);
+
+    const newComponent = cloneDeep(currentComponent);
+    if (newComponent && newComponent.props && newComponent.props.style) {
+      newComponent.props.style.left = newLeft;
+      newComponent.props.style.top = newTop;
+      dispatch(updateComponent(newComponent));
+    }
   };
 
   useHotKey(
@@ -78,7 +109,7 @@ export default function useInitHotKeys() {
     wrap(() => {
       move("up");
     }),
-    [currentComponent]
+    [currentComponent, page]
   );
 
   useHotKey(
@@ -86,7 +117,7 @@ export default function useInitHotKeys() {
     wrap(() => {
       move("down");
     }),
-    [currentComponent]
+    [currentComponent, page]
   );
 
   useHotKey(
@@ -94,7 +125,7 @@ export default function useInitHotKeys() {
     wrap(() => {
       move("left");
     }),
-    [currentComponent]
+    [currentComponent, page]
   );
 
   useHotKey(
@@ -102,6 +133,6 @@ export default function useInitHotKeys() {
     wrap(() => {
       move("right");
     }),
-    [currentComponent]
+    [currentComponent, page]
   );
 }

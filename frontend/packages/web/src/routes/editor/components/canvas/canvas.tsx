@@ -85,7 +85,6 @@ const Canvas = (props: CanvasProps) => {
 
   const onMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
-
     const target = e.target as HTMLElement;
     const parentElement = getParentElement(target, `${prefix}-wrapper`);
     let isMoving = false;
@@ -291,6 +290,7 @@ const Canvas = (props: CanvasProps) => {
         )}
         <div className={`${prefix}-body__container`}>
           <div
+            id="editorContainer"
             ref={content}
             className={`${prefix}-body__content ${pageActive ? "active" : ""}`}
             style={pageStyle}
