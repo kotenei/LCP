@@ -25,6 +25,8 @@ export interface CanvasProps
   page?: PageData;
   pageActive?: boolean;
   boundaryCheck?: boolean;
+  undoDisabled?: boolean;
+  redoDisabled?: boolean;
   onPositionUpdate?: (position: {
     left: number;
     top: number;
@@ -49,13 +51,15 @@ const Canvas = (props: CanvasProps) => {
     page,
     pageActive,
     boundaryCheck = true,
+    undoDisabled = false,
+    redoDisabled = false,
     onPositionUpdate,
     onSizeUpdate,
     ...others
   } = props;
   const prefix = `${prefixCls}-canvas`;
   const classString = classnames(prefix, className);
-  const { onItemClick } = useContext(EditorContext) || {};
+  const { onItemClick, onUndo, onRedo } = useContext(EditorContext) || {};
   const content = useRef<any>(null);
   const gap = useRef({ x: 0, y: 0 });
 
@@ -273,10 +277,23 @@ const Canvas = (props: CanvasProps) => {
       <div className={`${prefix}-header`}>
         <Space size={16}>
           <Tooltip title="撤销">
-            <Button shape="circle" icon={<UndoOutlined />} />
+            <Button
+              shape="circle"
+              icon={<UndoOutlined />}
+              disabled={undoDisabled}
+              onClick={(e) => {
+                e.preventDefault();
+                onUndo && onUndo();
+              }}
+            />
           </Tooltip>
           <Tooltip title="重做">
-            <Button shape="circle" icon={<RedoOutlined />} />
+            <Button
+              shape="circle"
+              icon={<RedoOutlined />}
+              disabled={redoDisabled}
+              onClick={onRedo}
+            />
           </Tooltip>
         </Space>
       </div>

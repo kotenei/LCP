@@ -35,3 +35,11 @@ export interface FormProps extends PropToForm {
   eventName?: string;
   onChange?: (eventName: string, val: any) => void;
 }
+
+export interface HistoryProps {
+  id: string;
+  componentId: string;
+  type: "add" | "update" | "delete";
+  data: any;
+  index?: number;
+}

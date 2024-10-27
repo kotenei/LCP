@@ -18,6 +18,8 @@ import {
   setCurrentComponent,
   updatePage,
   updateComponents,
+  undo,
+  redo,
 } from "./editor.reducer";
 import { presetData } from "../../common/schema";
 import { ComponentData } from "./typing";
@@ -33,9 +35,8 @@ const { Sider, Content } = ALayout;
 
 const Editor = (props: EditorProps) => {
   const { prefixCls = "lcp-web-editor" } = props;
-  const { components, currentComponent, page } = useAppSelector(
-    (state) => state.editor
-  );
+  const { components, currentComponent, page, histories, historyIndex } =
+    useAppSelector((state) => state.editor);
   const dispatch = useAppDispatch();
   const [state, setState] = useState({
     leftTabKey: "1",
@@ -164,7 +165,7 @@ const Editor = (props: EditorProps) => {
     id: string;
   }) => {
     const { left, top, width, height, id } = size;
-    const component = components?.find((item) => item.id === id);
+    const component = components?.find((item: any) => item.id === id);
     if (component) {
       const newComponent = cloneDeep(component);
       if (newComponent.props && newComponent.props.style) {
@@ -175,6 +176,14 @@ const Editor = (props: EditorProps) => {
         dispatch(updateComponent(newComponent));
       }
     }
+  };
+
+  const onUndo = () => {
+    dispatch(undo());
+  };
+
+  const onRedo = () => {
+    dispatch(redo());
   };
 
   const getUpdateComponent = (id: string) => {
@@ -200,6 +209,20 @@ const Editor = (props: EditorProps) => {
     return result;
   }, []);
 
+  const undoDisabled = useMemo(() => {
+    if (historyIndex > -1) {
+      return false;
+    }
+    return true;
+  }, [histories, historyIndex]);
+
+  const redoDisabled = useMemo(() => {
+    if (histories.length > 0 && historyIndex < histories.length - 1) {
+      return false;
+    }
+    return true;
+  }, [histories, historyIndex]);
+
   const contextValue: EditorContextProps = {
     onItemAdd,
     onItemClick,
@@ -208,6 +231,8 @@ const Editor = (props: EditorProps) => {
     onPageChange,
     onPropChange,
     onSort,
+    onUndo,
+    onRedo,
   };
 
   return (
@@ -249,6 +274,8 @@ const Editor = (props: EditorProps) => {
               currentComponent={currentComponent}
               page={page}
               pageActive={state.rightTabKey === "3"}
+              undoDisabled={undoDisabled}
+              redoDisabled={redoDisabled}
               onPositionUpdate={onPositionUpdate}
               onSizeUpdate={onSizeUpdate}
             />

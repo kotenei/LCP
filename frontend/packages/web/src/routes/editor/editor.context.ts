@@ -9,6 +9,8 @@ export interface EditorContextProps {
   onPageChange: (key: string, value: any) => void;
   onPropChange: (key: string, value: any) => void;
   onSort: (components: ComponentData[]) => void;
+  onUndo: () => void;
+  onRedo: () => void;
 }
 
 const EditorContext = React.createContext<EditorContextProps | undefined>(
