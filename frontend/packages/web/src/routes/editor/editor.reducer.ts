@@ -3,7 +3,7 @@ import { cloneDeep } from "lodash-es";
 import { v4 as uuidv4 } from "uuid";
 import { getTemplate } from "./editor.actions";
 import { ComponentData, HistoryProps, PageData, TemplateData } from "./typing";
-import { insertAt } from "@lcp/utils";
+import { insertAt, debounce } from "@lcp/utils";
 
 // 定义初始状态的类型
 interface EditorState {
@@ -37,9 +37,9 @@ const initialState: EditorState = {
   copiedComponent: null,
   histories: [],
   historyIndex: -1,
-  canUndo: false,
-  canRedo: false,
 };
+
+const pushModifyHistory = (state) => {};
 
 export const editorSlice = createSlice({
   name: "editor",

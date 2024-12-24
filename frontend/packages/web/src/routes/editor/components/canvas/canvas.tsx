@@ -282,7 +282,7 @@ const Canvas = (props: CanvasProps) => {
               icon={<UndoOutlined />}
               disabled={undoDisabled}
               onClick={(e) => {
-                e.preventDefault();
+                e.stopPropagation();
                 onUndo && onUndo();
               }}
             />
@@ -292,7 +292,10 @@ const Canvas = (props: CanvasProps) => {
               shape="circle"
               icon={<RedoOutlined />}
               disabled={redoDisabled}
-              onClick={onRedo}
+              onClick={(e) => {
+                e.stopPropagation();
+                onRedo && onRedo();
+              }}
             />
           </Tooltip>
         </Space>

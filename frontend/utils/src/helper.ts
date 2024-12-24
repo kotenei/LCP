@@ -16,3 +16,19 @@ export const getParentElement = (element: HTMLElement, className: string) => {
 export const insertAt = (arr: any[], index: number, newItem: any) => {
   return [...arr.slice(0, index), newItem, ...arr.slice(index)];
 };
+
+export const debounce = (
+  callback: (...args: any) => void,
+  timeout: number = 300
+) => {
+  let timer: number;
+  return (...args: any) => {
+    if (timer) {
+      console.log('aaaaa')
+      clearTimeout(timer);
+    }
+    timer = setTimeout(() => {
+      callback(...args);
+    }, timeout);
+  };
+};

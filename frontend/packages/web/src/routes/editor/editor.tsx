@@ -1,7 +1,7 @@
 import { HTMLAttributes, memo, useEffect, useMemo } from "react";
 import { Layout as ALayout, Button, Space } from "antd";
 import { v4 as uuidv4 } from "uuid";
-import { useHotKey, useState } from "@lcp/hooks";
+import { useState } from "@lcp/hooks";
 import { getBase64 } from "@lcp/utils";
 import { cloneDeep } from "lodash-es";
 import { RcFile } from "antd/es/upload";
@@ -38,12 +38,14 @@ const Editor = (props: EditorProps) => {
   const { components, currentComponent, page, histories, historyIndex } =
     useAppSelector((state) => state.editor);
   const dispatch = useAppDispatch();
+
   const [state, setState] = useState({
     leftTabKey: "1",
     rightTabKey: "1",
     currentElement: null,
     imageUrl: "",
   });
+
   useInitHotKeys("#editorContainer");
 
   const onLeftTabChange = (activeKey: string) => {

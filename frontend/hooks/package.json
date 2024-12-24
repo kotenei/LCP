@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@lcp/hooks": "file:",
+    "@lcp/utils": "workspace:*",
     "hotkeys-js": "^3.13.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
