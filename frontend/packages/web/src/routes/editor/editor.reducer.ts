@@ -1,12 +1,12 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { cloneDeep } from "lodash-es";
-import { v4 as uuidv4 } from "uuid";
-import { getTemplate } from "./editor.actions";
-import { ComponentData, HistoryProps, PageData, TemplateData } from "./typing";
-import { insertAt, debounce } from "@lcp/utils";
+import { createSlice } from '@reduxjs/toolkit';
+import { cloneDeep } from 'lodash-es';
+import { v4 as uuidv4 } from 'uuid';
+import { getTemplate } from './editor.actions';
+import { ComponentData, HistoryProps, PageData, TemplateData } from './typing';
+import { insertAt } from '@lcp/utils';
 
 // 定义初始状态的类型
-interface EditorState {
+export interface EditorState {
   template?: TemplateData | null;
   templateLoading: boolean;
   components?: ComponentData[];
@@ -15,6 +15,7 @@ interface EditorState {
   copiedComponent?: ComponentData | null;
   histories: HistoryProps[];
   historyIndex: number;
+  oldValue: any;
 }
 
 // 初始状态
@@ -26,10 +27,10 @@ const initialState: EditorState = {
   page: {
     props: {
       style: {
-        backgroundColor: "",
-        backgroundImage: "",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "contain",
+        backgroundColor: '',
+        backgroundImage: '',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'contain',
         height: 530,
       },
     },
@@ -37,12 +38,11 @@ const initialState: EditorState = {
   copiedComponent: null,
   histories: [],
   historyIndex: -1,
+  oldValue: null,
 };
 
-const pushModifyHistory = (state) => {};
-
 export const editorSlice = createSlice({
-  name: "editor",
+  name: 'editor',
   initialState,
   reducers: {
     setCurrentComponent: (state, action) => {
@@ -51,18 +51,14 @@ export const editorSlice = createSlice({
     setCopiedComponent: (state, action) => {
       state.copiedComponent = action.payload;
     },
+    setOldValue: (state, action) => {
+      state.oldValue = action.payload;
+    },
     pasteCopiedComponent: (state, action) => {
       if (action.payload) {
         const newItem = cloneDeep(action.payload);
         action.payload = newItem;
         editorSlice.caseReducers.addComponent(state, action);
-
-        state.histories.push({
-          id: uuidv4(),
-          componentId: newItem.id,
-          type: "add",
-          data: cloneDeep(newItem),
-        });
       }
     },
     addComponent: (state, action) => {
@@ -73,13 +69,11 @@ export const editorSlice = createSlice({
       newItem.show = true;
       state.components?.push(newItem);
 
-      const histories = state.histories.length
-        ? (state.histories.slice(0, state.historyIndex + 1) as any)
-        : [];
+      const histories = state.histories.length ? (state.histories.slice(0, state.historyIndex + 1) as any) : [];
       histories.push({
         id: uuidv4(),
         componentId: newItem.id,
-        type: "add",
+        type: 'add',
         data: cloneDeep(newItem),
       });
       state.histories = histories;
@@ -87,7 +81,6 @@ export const editorSlice = createSlice({
     },
     deleteComponent: (state, action) => {
       const id = action.payload;
-
       if (state.currentComponent && state.currentComponent.id === id) {
         let index = -1;
         const newComponents = state.components
@@ -102,49 +95,15 @@ export const editorSlice = createSlice({
         const currentComponent = state.currentComponent;
         state.components = newComponents;
         state.currentComponent = null;
-        state.histories.push({
+        const histories = state.histories.length ? (state.histories.slice(0, state.historyIndex + 1) as any) : [];
+        histories.push({
           id: uuidv4(),
           componentId: id,
-          type: "delete",
+          type: 'delete',
           data: currentComponent,
           index,
         });
-        state.historyIndex++;
-      }
-    },
-    updateComponent: (state, action) => {
-      const component = action.payload;
-      const newComponents = state.components ? [...state.components] : [];
-      const index = newComponents.findIndex((c) => c.id === component.id);
-
-      if (index >= 0) {
-        const oldComponent = newComponents[index];
-        newComponents[index] = component;
-        state.components = newComponents;
-        if (
-          state.currentComponent &&
-          state.currentComponent.id === component.id
-        ) {
-          state.currentComponent = component;
-        }
-        state.histories.push({
-          id: uuidv4(),
-          componentId: component.id,
-          type: "update",
-          data: {
-            oldValue: {
-              name: oldComponent.name,
-              show: oldComponent.show,
-              props: oldComponent.props,
-            },
-            newValue: {
-              name: component.name,
-              show: component.show,
-              props: component.props,
-            },
-          },
-          index,
-        });
+        state.histories = histories;
         state.historyIndex++;
       }
     },
@@ -159,32 +118,45 @@ export const editorSlice = createSlice({
       }
       state.page = newPageData;
     },
+    pushHistory: (state, action) => {
+      const { componentId, type, data } = action.payload;
+      state.histories.push({
+        id: uuidv4(),
+        componentId: componentId,
+        type: type,
+        data: {
+          oldValue: state.oldValue,
+          ...data,
+        },
+      });
+      state.historyIndex++;
+      state.oldValue = null;
+    },
     undo: (state) => {
       const history = state.histories[state.historyIndex];
       if (history) {
         switch (history.type) {
-          case "add":
-            state.components = state.components?.filter(
-              (item) => item.id !== history.componentId
-            );
+          case 'add':
+            state.components = state.components?.filter((item) => item.id !== history.componentId);
+            if (state.currentComponent && state.currentComponent.id === history.componentId) {
+              state.currentComponent = null;
+            }
             break;
-          case "delete":
-            state.components = insertAt(
-              state.components as any[],
-              history.index as number,
-              history.data
-            );
+          case 'delete':
+            state.components = insertAt(state.components as any[], history.index as number, history.data);
+            state.currentComponent = history.data;
             break;
-          case "update":
+          case 'update':
             const { componentId, data } = history;
             const { oldValue } = data;
-            const updateComponent = state.components?.find(
-              (item) => item.id === componentId
-            );
+            const updateComponent = state.components?.find((item) => item.id === componentId);
             if (updateComponent) {
               updateComponent.props = oldValue.props;
               updateComponent.name = oldValue.name;
               updateComponent.show = oldValue.show;
+              if (state.currentComponent && state.currentComponent.id === updateComponent.id) {
+                state.currentComponent = updateComponent;
+              }
             }
             break;
           default:
@@ -197,24 +169,28 @@ export const editorSlice = createSlice({
       const history = state.histories[state.historyIndex + 1];
       if (history) {
         switch (history.type) {
-          case "add":
+          case 'add':
             state.components?.push(history.data);
+            if (state.currentComponent && state.currentComponent.id === history.componentId) {
+              state.currentComponent = history.data;
+            }
             break;
-          case "delete":
-            state.components = state.components?.filter(
-              (item) => item.id !== history.componentId
-            );
+          case 'delete':
+            state.components = state.components?.filter((item) => item.id !== history.componentId);
+            state.currentComponent = null;
             break;
-          case "update":
+          case 'update':
             const { componentId, data } = history;
             const { newValue } = data;
-            const updateComponent = state.components?.find(
-              (item) => item.id === componentId
-            );
+            const updateComponent = state.components?.find((item) => item.id === componentId);
             if (updateComponent) {
               updateComponent.props = newValue.props;
               updateComponent.name = newValue.name;
               updateComponent.show = newValue.show;
+              state.currentComponent = updateComponent;
+              if (state.currentComponent && state.currentComponent.id === updateComponent.id) {
+                state.currentComponent = updateComponent;
+              }
             }
             break;
           default:
@@ -243,13 +219,14 @@ export const editorSlice = createSlice({
 
 export const {
   setCurrentComponent,
+  setOldValue,
   addComponent,
-  updateComponent,
   updateComponents,
   updatePage,
   deleteComponent,
   setCopiedComponent,
   pasteCopiedComponent,
+  pushHistory,
   undo,
   redo,
 } = editorSlice.actions;

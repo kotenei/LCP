@@ -1,17 +1,13 @@
-import { useHotKey } from "@lcp/hooks";
-import { message } from "antd";
-import { HotkeysEvent, KeyHandler } from "hotkeys-js";
-import { cloneDeep } from "lodash-es";
+import { useHotKey } from '@lcp/hooks';
+import { message } from 'antd';
+import { HotkeysEvent, KeyHandler } from 'hotkeys-js';
+import { cloneDeep } from 'lodash-es';
 
-import { useAppDispatch, useAppSelector } from "../store";
-import {
-  setCopiedComponent,
-  pasteCopiedComponent,
-  deleteComponent,
-  updateComponent,
-} from "../routes/editor/editor.reducer";
+import { useAppDispatch, useAppSelector } from '../store';
+import { setCopiedComponent, pasteCopiedComponent, deleteComponent } from '../routes/editor/editor.reducer';
+import { debounceUpdateCompnent } from '../routes/editor/editor.actions';
 
-type MoveDirection = "up" | "down" | "left" | "right";
+type MoveDirection = 'up' | 'down' | 'left' | 'right';
 
 const wrap = (callback: KeyHandler) => {
   return (e: KeyboardEvent, event: HotkeysEvent) => {
@@ -21,9 +17,7 @@ const wrap = (callback: KeyHandler) => {
 };
 
 export default function useInitHotKeys(containerSelector: string) {
-  const { currentComponent, copiedComponent, page } = useAppSelector(
-    (state) => state.editor
-  );
+  const { currentComponent, copiedComponent, page } = useAppSelector((state) => state.editor);
   const dispatch = useAppDispatch();
   const elmContainer = document.querySelector(containerSelector) as HTMLElement;
   const move = (direction: MoveDirection) => {
@@ -38,16 +32,16 @@ export default function useInitHotKeys(containerSelector: string) {
     let newLeft = parseInt(orgLeft);
 
     switch (direction) {
-      case "up":
+      case 'up':
         newTop = orgTop - step;
         break;
-      case "down":
+      case 'down':
         newTop = orgTop + step;
         break;
-      case "left":
+      case 'left':
         newLeft = orgLeft - step;
         break;
-      case "right":
+      case 'right':
         newLeft = orgLeft + step;
         break;
       default:
@@ -68,71 +62,71 @@ export default function useInitHotKeys(containerSelector: string) {
     if (newComponent && newComponent.props && newComponent.props.style) {
       newComponent.props.style.left = newLeft;
       newComponent.props.style.top = newTop;
-      dispatch(updateComponent(newComponent));
+      dispatch(debounceUpdateCompnent(newComponent));
     }
   };
 
   useHotKey(
-    "ctrl+c, command+c",
+    'ctrl+c, command+c',
     () => {
       if (currentComponent) {
-        message.success("已拷贝当前图层", 1);
+        message.success('已拷贝当前图层', 1);
         dispatch(setCopiedComponent(currentComponent));
       }
     },
-    [currentComponent]
+    [currentComponent],
   );
 
   useHotKey(
-    "ctrl+v, command+v",
+    'ctrl+v, command+v',
     () => {
       if (copiedComponent) {
         dispatch(pasteCopiedComponent(copiedComponent));
-        message.success("已粘贴图层", 1);
+        message.success('已粘贴图层', 1);
       }
     },
-    [copiedComponent]
+    [copiedComponent],
   );
 
   useHotKey(
-    "delete",
+    'delete',
     () => {
       if (currentComponent) {
         dispatch(deleteComponent(currentComponent.id));
       }
     },
-    [currentComponent]
+    [currentComponent],
   );
 
   useHotKey(
-    "up",
+    'up',
     wrap(() => {
-      move("up");
+      move('up');
     }),
-    [currentComponent, page]
+    [currentComponent, page],
   );
 
   useHotKey(
-    "down",
+    'down',
     wrap(() => {
-      move("down");
+      move('down');
     }),
-    [currentComponent, page]
+    [currentComponent, page],
   );
 
   useHotKey(
-    "left",
+    'left',
     wrap(() => {
-      move("left");
+      move('left');
     }),
-    [currentComponent, page]
+    [currentComponent, page],
   );
 
   useHotKey(
-    "right",
+    'right',
     wrap(() => {
-      move("right");
+      move('right');
     }),
-    [currentComponent, page]
+    [currentComponent, page],
   );
 }

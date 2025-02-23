@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export const componentToFormProps = (component?: ComponentProps) => {
   const formProps: FormProps[] = [];
-
+  
   const newFormProps = (key: any, value: any, mapProps: any) => {
     return {
       ...mapProps,
@@ -13,8 +13,6 @@ export const componentToFormProps = (component?: ComponentProps) => {
       value: mapProps.initalTransform ? mapProps.initalTransform(value) : value,
     };
   };
-
-  
 
   if (component) {
     for (const key in component) {
