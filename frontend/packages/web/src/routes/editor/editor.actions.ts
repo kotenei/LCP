@@ -1,16 +1,16 @@
 import { template } from '@lcp/apis';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ComponentData, HistoryProps } from './typing';
-import { pushHistory, updateComponents, setCurrentComponent, setOldValue } from './editor.reducer';
+import { pushModifyHistory, updateComponents, setCurrentComponent, setOldValue } from './editor.reducer';
 import { debounce } from '@lcp/utils';
 import { AppDispatch, RootState } from '../../store';
 import { cloneDeep } from 'lodash-es';
 
-const pushModifyHistory = (dispatch: AppDispatch, { componentId, data }: HistoryProps) => {
-  dispatch(pushHistory({ componentId, data, type: 'update' }));
+const pushUpdateHistory = (dispatch: AppDispatch, { componentId, data }: HistoryProps) => {
+  dispatch(pushModifyHistory({ componentId, data, type: 'update' }));
 };
 
-const pushHistoryDebounce = debounce(pushModifyHistory);
+const pushHistoryDebounce = debounce(pushUpdateHistory);
 
 export const getTemplate = createAsyncThunk('@editor/getTemplate', async (id: number) => {
   const response = await template.getTemplate(id);
@@ -43,7 +43,7 @@ export const debounceUpdateCompnent = (component: ComponentData) => (dispatch: A
           show: component.show,
           props: component.props,
         },
-        index
+        index,
       },
     });
   }

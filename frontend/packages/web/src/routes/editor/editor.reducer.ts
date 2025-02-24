@@ -41,6 +41,10 @@ const initialState: EditorState = {
   oldValue: null,
 };
 
+const getHistories = (state: EditorState) => {
+  return state.histories.length ? (state.histories.slice(0, state.historyIndex + 1) as any) : [];
+};
+
 export const editorSlice = createSlice({
   name: 'editor',
   initialState,
@@ -69,7 +73,7 @@ export const editorSlice = createSlice({
       newItem.show = true;
       state.components?.push(newItem);
 
-      const histories = state.histories.length ? (state.histories.slice(0, state.historyIndex + 1) as any) : [];
+      const histories = getHistories(state);
       histories.push({
         id: uuidv4(),
         componentId: newItem.id,
@@ -95,7 +99,7 @@ export const editorSlice = createSlice({
         const currentComponent = state.currentComponent;
         state.components = newComponents;
         state.currentComponent = null;
-        const histories = state.histories.length ? (state.histories.slice(0, state.historyIndex + 1) as any) : [];
+        const histories = getHistories(state);
         histories.push({
           id: uuidv4(),
           componentId: id,
@@ -112,15 +116,28 @@ export const editorSlice = createSlice({
     },
     updatePage: (state, action) => {
       const { key, value } = action.payload;
+      const oldValue = cloneDeep(state.page);
       const newPageData = { ...state.page };
       if (newPageData.props && newPageData.props.style) {
         newPageData.props.style[key] = value;
       }
+      const histories = getHistories(state);
       state.page = newPageData;
+      histories.push({
+        id: uuidv4(),
+        type: 'page',
+        data: {
+          oldValue,
+          newValue: newPageData,
+        },
+      });
+      state.histories = histories;
+      state.historyIndex++;
     },
-    pushHistory: (state, action) => {
+    pushModifyHistory: (state, action) => {
       const { componentId, type, data } = action.payload;
-      state.histories.push({
+      const histories = getHistories(state);
+      histories.push({
         id: uuidv4(),
         componentId: componentId,
         type: type,
@@ -129,6 +146,7 @@ export const editorSlice = createSlice({
           ...data,
         },
       });
+      state.histories = histories;
       state.historyIndex++;
       state.oldValue = null;
     },
@@ -158,6 +176,9 @@ export const editorSlice = createSlice({
                 state.currentComponent = updateComponent;
               }
             }
+            break;
+          case 'page':
+            state.page = history.data.oldValue;
             break;
           default:
             break;
@@ -193,6 +214,9 @@ export const editorSlice = createSlice({
               }
             }
             break;
+          case 'page':
+            state.page = history.data.newValue;
+            break;
           default:
             break;
         }
@@ -226,7 +250,7 @@ export const {
   deleteComponent,
   setCopiedComponent,
   pasteCopiedComponent,
-  pushHistory,
+  pushModifyHistory,
   undo,
   redo,
 } = editorSlice.actions;

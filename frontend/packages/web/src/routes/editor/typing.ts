@@ -1,4 +1,4 @@
-import { PropToForm } from "../../common/schema/typing";
+import { PropToForm } from '../../common/schema/typing';
 
 export interface ComponentProps {
   [key: string]: any;
@@ -38,8 +38,8 @@ export interface FormProps extends PropToForm {
 
 export interface HistoryProps {
   id: string;
-  componentId: string;
-  type: "add" | "update" | "delete";
+  componentId?: string;
+  type: 'add' | 'update' | 'delete' | 'page';
   data: any;
   index?: number;
 }
