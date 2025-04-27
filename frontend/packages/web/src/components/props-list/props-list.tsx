@@ -1,5 +1,5 @@
 import { HTMLAttributes, memo } from "react";
-import { FormProps } from "../../routes/editor/typing";
+import { FormProps } from "../../routes/editor/editor.types";
 import "./props-list.scss";
 
 export interface PropsList

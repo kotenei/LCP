@@ -1,4 +1,4 @@
-import { PropToForm } from '../../common/schema/typing';
+import { PropToForm } from '../../common/schema/types';
 
 export interface ComponentProps {
   [key: string]: any;

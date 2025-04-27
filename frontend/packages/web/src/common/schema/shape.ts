@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { PresetData } from "./typing";
+import { PresetData } from "./types";
 import { commonStyle } from "./style";
 
 const COLOR = "#40A9FF";

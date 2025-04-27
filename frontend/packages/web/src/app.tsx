@@ -15,7 +15,7 @@ function App() {
       <ConfigProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<Editor />} />
+            <Route path="/" element={<Home />} />
             <Route path="/detail/:id" element={<Detail />} />
             <Route path="/editor/:id" element={<Editor />} />
           </Routes>

@@ -10,7 +10,7 @@ import {
 import { ShadowPicker } from "../../components/shadow-picker";
 import { IconButton } from "../../components/icon-button";
 import { Upload } from "../../components/upload";
-import { CSSPropsToForm, PropsToForm } from "./typing";
+import { CSSPropsToForm, PropsToForm } from "./types";
 
 export const mapPropsCategory = [
   { id: "1", label: "基本属性" },

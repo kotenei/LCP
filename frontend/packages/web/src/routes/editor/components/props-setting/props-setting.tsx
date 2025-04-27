@@ -4,7 +4,7 @@ import { Collapse, Empty } from "antd";
 import { mapPropsCategory } from "../../../../common/schema";
 import { componentToFormProps } from "../../../../utils";
 import { PropsList } from "../../../../components/props-list";
-import { ComponentData } from "../../typing";
+import { ComponentData } from "../../editor.types";
 import "./props-setting.scss";
 import EditorContext from "../../editor.context";
 

@@ -4,7 +4,7 @@ import { Tabs } from "antd";
 import { PropsSetting } from "../props-setting";
 import { LayerSetting } from "../layer-setting";
 import { ViewSetting } from "../view-setting";
-import { ComponentData, PageData } from "../../typing";
+import { ComponentData, PageData } from "../../editor.types";
 
 export interface RightPanelProps
   extends LCPWeb.BasicProps<HTMLAttributes<HTMLDivElement>> {

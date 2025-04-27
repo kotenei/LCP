@@ -1,23 +1,15 @@
-import {
-  HTMLAttributes,
-  memo,
-  useMemo,
-  useContext,
-  useRef,
-  MouseEventHandler,
-} from "react";
-import classnames from "classnames";
-import { Space, Button, Tooltip, Spin } from "antd";
-import { UndoOutlined, RedoOutlined, LoadingOutlined } from "@ant-design/icons";
-import { getParentElement } from "@lcp/utils";
+import { HTMLAttributes, memo, useMemo, useContext, useRef, MouseEventHandler } from 'react';
+import classnames from 'classnames';
+import { Space, Button, Tooltip, Spin } from 'antd';
+import { UndoOutlined, RedoOutlined, LoadingOutlined } from '@ant-design/icons';
+import { getParentElement } from '@lcp/utils';
 
-import { DynamicTag } from "../../../../components/dynamic-tag";
-import { ComponentData, PageData } from "../../typing";
-import EditorContext from "../../editor.context";
-import "./canvas.scss";
+import { DynamicTag } from '../../../../components/dynamic-tag';
+import { ComponentData, PageData } from '../../editor.types';
+import EditorContext from '../../editor.context';
+import './canvas.scss';
 
-export interface CanvasProps
-  extends LCPWeb.BasicProps<HTMLAttributes<HTMLDivElement>> {
+export interface CanvasProps extends LCPWeb.BasicProps<HTMLAttributes<HTMLDivElement>> {
   data?: any;
   components?: ComponentData[];
   currentComponent?: ComponentData | null;
@@ -27,18 +19,8 @@ export interface CanvasProps
   boundaryCheck?: boolean;
   undoDisabled?: boolean;
   redoDisabled?: boolean;
-  onPositionUpdate?: (position: {
-    left: number;
-    top: number;
-    id: string;
-  }) => void;
-  onSizeUpdate?: (size: {
-    left: number;
-    top: number;
-    height: number;
-    width: number;
-    id: string;
-  }) => void;
+  onPositionUpdate?: (position: { left: number; top: number; id: string }) => void;
+  onSizeUpdate?: (size: { left: number; top: number; height: number; width: number; id: string }) => void;
 }
 
 const Canvas = (props: CanvasProps) => {
@@ -59,7 +41,7 @@ const Canvas = (props: CanvasProps) => {
   } = props;
   const prefix = `${prefixCls}-canvas`;
   const classString = classnames(prefix, className);
-  const { onItemClick, onUndo, onRedo } = useContext(EditorContext) || {};
+  const { onUndo, onRedo } = useContext(EditorContext) || {};
   const content = useRef<any>(null);
   const gap = useRef({ x: 0, y: 0 });
 
@@ -88,6 +70,9 @@ const Canvas = (props: CanvasProps) => {
   };
 
   const onMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
+    if (e.button === 2) {
+      return;
+    }
     e.preventDefault();
     const target = e.target as HTMLElement;
     const parentElement = getParentElement(target, `${prefix}-wrapper`);
@@ -137,8 +122,8 @@ const Canvas = (props: CanvasProps) => {
         newLeft = Math.round(newLeft);
         newTop = Math.round(newTop);
 
-        parentElement.style.left = newLeft + "px";
-        parentElement.style.top = newTop + "px";
+        parentElement.style.left = newLeft + 'px';
+        parentElement.style.top = newTop + 'px';
         curLeft = newLeft;
         curTop = newTop;
         id = parentElement.id;
@@ -147,26 +132,27 @@ const Canvas = (props: CanvasProps) => {
 
     const onMouseUp = (e: MouseEvent) => {
       e.preventDefault();
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup", onMouseUp);
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onMouseUp);
       if (isMoving && curLeft >= 0 && curTop >= 0 && onPositionUpdate) {
         onPositionUpdate({ left: curLeft, top: curTop, id });
       }
       isMoving = false;
     };
 
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onMouseUp);
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onMouseUp);
   };
 
   const onStartResize = (type: string) => (e: React.MouseEvent) => {
+    if (e.button === 2) {
+      return;
+    }
     e.stopPropagation();
     e.preventDefault();
     const target = e.target as HTMLElement;
     const parentElement = getParentElement(target, `${prefix}-wrapper`);
-    const component = parentElement?.querySelector(
-      `.${prefix}-component`
-    ) as HTMLElement;
+    const component = parentElement?.querySelector(`.${prefix}-component`) as HTMLElement;
     const startX = e.clientX;
     const startY = e.clientY;
     const contentWidth = content.current.offsetWidth;
@@ -199,22 +185,22 @@ const Canvas = (props: CanvasProps) => {
         isMoving = true;
 
         switch (type) {
-          case "bottomRight":
+          case 'bottomRight':
             width = wrapperWidth + (clientX - startX);
             height = wrapperHeight + (clientY - startY);
             break;
-          case "bottomLeft":
+          case 'bottomLeft':
             height = wrapperHeight + (clientY - startY);
             width = wrapperWidth + (startX - clientX);
             left = wrapperLeft - (startX - clientX);
             break;
-          case "topLeft":
+          case 'topLeft':
             width = wrapperWidth + (startX - clientX);
             height = wrapperHeight - (clientY - startY);
             left = wrapperLeft - (startX - clientX);
             top = wrapperTop - (startY - clientY);
             break;
-          case "topRight":
+          case 'topRight':
             width = wrapperWidth + (clientX - startX);
             height = wrapperHeight - (clientY - startY);
             top = wrapperTop - (startY - clientY);
@@ -246,39 +232,39 @@ const Canvas = (props: CanvasProps) => {
         top = Math.round(top);
         left = Math.round(left);
 
-        parentElement.style.width = width + "px";
-        parentElement.style.height = height + "px";
-        component.style.width = width + "px";
-        component.style.height = height + "px";
+        parentElement.style.width = width + 'px';
+        parentElement.style.height = height + 'px';
+        component.style.width = width + 'px';
+        component.style.height = height + 'px';
 
-        parentElement.style.top = top + "px";
-        parentElement.style.left = left + "px";
-        component.style.left = top + "px";
-        component.style.left = left + "px";
+        parentElement.style.top = top + 'px';
+        parentElement.style.left = left + 'px';
+        component.style.left = top + 'px';
+        component.style.left = left + 'px';
       }
     };
 
     const onMouseUp = (e: MouseEvent) => {
       e.preventDefault();
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup", onMouseUp);
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onMouseUp);
       if (isMoving && onSizeUpdate) {
         onSizeUpdate({ left, top, width, height, id });
       }
       isMoving = false;
     };
 
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onMouseUp);
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onMouseUp);
   };
 
   return (
     <div className={classString} {...others}>
       <div className={`${prefix}-header`}>
         <Space size={16}>
-          <Tooltip title="撤销">
+          <Tooltip title='撤销'>
             <Button
-              shape="circle"
+              shape='circle'
               icon={<UndoOutlined />}
               disabled={undoDisabled}
               onClick={(e) => {
@@ -287,9 +273,9 @@ const Canvas = (props: CanvasProps) => {
               }}
             />
           </Tooltip>
-          <Tooltip title="重做">
+          <Tooltip title='重做'>
             <Button
-              shape="circle"
+              shape='circle'
               icon={<RedoOutlined />}
               disabled={redoDisabled}
               onClick={(e) => {
@@ -301,26 +287,14 @@ const Canvas = (props: CanvasProps) => {
         </Space>
       </div>
       <div className={`${prefix}-body`}>
-        {loading && (
-          <Spin
-            className={`${prefix}-loading`}
-            size="large"
-            indicator={<LoadingOutlined spin />}
-          />
-        )}
+        {loading && <Spin className={`${prefix}-loading`} size='large' indicator={<LoadingOutlined spin />} />}
         <div className={`${prefix}-body__container`}>
-          <div
-            id="editorContainer"
-            ref={content}
-            className={`${prefix}-body__content ${pageActive ? "active" : ""}`}
-            style={pageStyle}
-          >
+          <div id='editorContainer' ref={content} className={`${prefix}-body__content ${pageActive ? 'active' : ''}`} style={pageStyle}>
             {components &&
               components.map((component) => {
                 const wrapperClass = classnames({
                   [`${prefix}-wrapper`]: true,
-                  [`${prefix}-wrapper--active`]:
-                    currentComponent && currentComponent.id === component.id,
+                  [`${prefix}-wrapper--active`]: currentComponent && currentComponent.id === component.id,
                 });
 
                 const style = component.props?.style || {};
@@ -339,10 +313,6 @@ const Canvas = (props: CanvasProps) => {
                         height: style.height,
                       }}
                       onMouseDown={onMouseDown}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onItemClick && onItemClick(component);
-                      }}
                     >
                       <DynamicTag
                         type={component.type}
@@ -350,24 +320,13 @@ const Canvas = (props: CanvasProps) => {
                           className: `${prefix}-component`,
                           ...component.props,
                         }}
+                        data-type='component'
                       />
                       <div className={`${prefix}-resizers`}>
-                        <div
-                          className={`${prefix}-resizers__resizer topLeft`}
-                          onMouseDown={onStartResize("topLeft")}
-                        ></div>
-                        <div
-                          className={`${prefix}-resizers__resizer topRight`}
-                          onMouseDown={onStartResize("topRight")}
-                        ></div>
-                        <div
-                          className={`${prefix}-resizers__resizer bottomLeft`}
-                          onMouseDown={onStartResize("bottomLeft")}
-                        ></div>
-                        <div
-                          className={`${prefix}-resizers__resizer bottomRight`}
-                          onMouseDown={onStartResize("bottomRight")}
-                        ></div>
+                        <div className={`${prefix}-resizers__resizer topLeft`} onMouseDown={onStartResize('topLeft')}></div>
+                        <div className={`${prefix}-resizers__resizer topRight`} onMouseDown={onStartResize('topRight')}></div>
+                        <div className={`${prefix}-resizers__resizer bottomLeft`} onMouseDown={onStartResize('bottomLeft')}></div>
+                        <div className={`${prefix}-resizers__resizer bottomRight`} onMouseDown={onStartResize('bottomRight')}></div>
                       </div>
                     </div>
                   )

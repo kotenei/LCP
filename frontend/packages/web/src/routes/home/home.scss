@@ -1,8 +1,24 @@
 @import '../../assets/variables.scss';
+@import '../../assets/mixins.scss';
 
-.#{$home}{
-    
-     &-container{
-        padding: 48px 52px;
-     }
-} 
+.#{$home} {
+  &-header {
+    text-align: center;
+    h1 {
+      margin: 0;
+    }
+    p {
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+  }
+  &-container {
+    padding: 48px 52px;
+    margin: 0 auto;
+    width: 1200px;
+  }
+  &-loading {
+    @include fixed-center;
+    z-index: 1000;
+  }
+}

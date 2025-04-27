@@ -15,7 +15,7 @@ import {
 } from "react-beautiful-dnd";
 
 import { useClickOutside, useState } from "@lcp/hooks";
-import { ComponentData } from "../../typing";
+import { ComponentData } from "../../editor.types";
 import "./layer-setting.scss";
 import EditorContext from "../../editor.context";
 

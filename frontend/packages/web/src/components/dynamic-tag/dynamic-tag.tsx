@@ -3,9 +3,9 @@ export interface DynamicTagProps {
   props?: any;
 }
 const DynamicTag = (props: DynamicTagProps) => {
-  const { type = "div", props: properties } = props;
+  const { type = 'div', props: properties, ...others } = props;
   const Component = type as any;
-  return <Component {...properties} />;
+  return <Component {...properties} {...others} />;
 };
 
 export default DynamicTag;

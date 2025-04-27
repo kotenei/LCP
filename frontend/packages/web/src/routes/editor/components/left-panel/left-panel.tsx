@@ -2,7 +2,7 @@ import { memo, useContext, useMemo } from "react";
 import { Tabs, Upload, Button, UploadProps } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
-import { ComponentData } from "../../typing";
+import { ComponentData } from "../../editor.types";
 import { DynamicTag } from "../../../../components/dynamic-tag";
 
 import "./left-panel.scss";

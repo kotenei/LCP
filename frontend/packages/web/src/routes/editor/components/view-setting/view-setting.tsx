@@ -2,7 +2,7 @@ import { HTMLAttributes, memo, useContext } from "react";
 
 import { PropsList } from "../../../../components/props-list";
 import { componentToFormProps } from "../../../../utils";
-import { PageData } from "../../typing";
+import { PageData } from "../../editor.types";
 
 import "./view-setting.scss";
 import EditorContext from "../../editor.context";

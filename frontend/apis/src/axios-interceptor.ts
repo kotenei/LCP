@@ -1,12 +1,13 @@
-import axios, {
-  AxiosError,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 interface InterceptorOps {
   request?: InternalAxiosRequestConfig;
   response?: AxiosResponse;
+}
+
+export interface ResponseData<T> {
+  message?: string;
+  data: T;
 }
 
 const aixosInterceptors = (options?: InterceptorOps) => {
@@ -22,7 +23,7 @@ const aixosInterceptors = (options?: InterceptorOps) => {
     },
     (err: AxiosError) => {
       return Promise.reject(err);
-    }
+    },
   );
 
   axios.interceptors.response.use(
@@ -31,7 +32,7 @@ const aixosInterceptors = (options?: InterceptorOps) => {
     },
     (err: AxiosError) => {
       return Promise.reject(err);
-    }
+    },
   );
 };
 

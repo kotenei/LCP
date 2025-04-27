@@ -1,5 +1,5 @@
-import { HTMLAttributes, memo, useMemo } from 'react';
-import { Layout as ALayout, Button, Space } from 'antd';
+import { HTMLAttributes, memo, useMemo, useRef } from 'react';
+import { Layout as ALayout, Button, Space, message } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import { useState } from '@lcp/hooks';
 import { getBase64 } from '@lcp/utils';
@@ -12,12 +12,23 @@ import { LeftPanel, LeftPanelData } from './components/left-panel';
 import { RightPanel } from './components/right-panel';
 import { Canvas } from './components/canvas';
 import { debounceUpdateCompnent } from './editor.actions';
-import { addComponent, setCurrentComponent, updatePage, updateComponents, undo, redo } from './editor.reducer';
+import {
+  addComponent,
+  setCurrentComponent,
+  updatePage,
+  updateComponents,
+  undo,
+  redo,
+  setCopiedComponent,
+  pasteCopiedComponent,
+  deleteComponent,
+} from './editor.reducer';
 import { presetData } from '../../common/schema';
-import { ComponentData } from './typing';
+import { ComponentData } from './editor.types';
 import { useInitHotKeys } from '../../hooks';
 import { commonStyle } from '../../common/schema/style';
 import EditorContext, { EditorContextProps } from './editor.context';
+import { ContextMenu } from '../../components/context-menu';
 import './editor.scss';
 
 export interface EditorProps extends LCPWeb.BasicProps<HTMLAttributes<HTMLDivElement>> {}
@@ -26,15 +37,16 @@ const { Sider, Content } = ALayout;
 
 const Editor = (props: EditorProps) => {
   const { prefixCls = 'lcp-web-editor' } = props;
-  const { components, currentComponent, page, histories, historyIndex } = useAppSelector((state) => state.editor);
+  const { components, currentComponent, page, histories, historyIndex, copiedComponent } = useAppSelector((state) => state.editor);
   const dispatch = useAppDispatch();
-
   const [state, setState] = useState({
     leftTabKey: '1',
     rightTabKey: '1',
     currentElement: null,
     imageUrl: '',
+    canShowContextMenu: true,
   });
+  const timer = useRef<number | null>(null);
 
   useInitHotKeys('#editorContainer');
 
@@ -55,6 +67,7 @@ const Editor = (props: EditorProps) => {
     if (changeTab) {
       onRightTabChange('1');
     }
+    setContextMenuShow(false);
   };
 
   const onItemAdd = (item: ComponentData) => {
@@ -123,9 +136,19 @@ const Editor = (props: EditorProps) => {
     dispatch(updatePage({ key, value }));
   };
 
-  const onCanvasClick = () => {
-    dispatch(setCurrentComponent(null));
-    onRightTabChange('3');
+  const onCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.id === 'editorContainer') {
+      dispatch(setCurrentComponent(null));
+      onRightTabChange('3');
+    } else if (target.getAttribute('data-type') === 'component') {
+      const parentElement = target.parentElement;
+      const id = parentElement?.id;
+      const component = components?.find((item) => item.id === id);
+      if (component) {
+        onItemClick(component);
+      }
+    }
   };
 
   const onSort = (components: ComponentData[]) => {
@@ -166,6 +189,27 @@ const Editor = (props: EditorProps) => {
 
   const onRedo = () => {
     dispatch(redo());
+  };
+
+  const onMenuOpen = (wrapperElement: HTMLElement) => {
+    const id = wrapperElement.getAttribute('id');
+    const component = components?.find((item) => item.id === id);
+    if (component) {
+      onItemClick(component);
+      setContextMenuShow(true);
+    }
+  };
+
+  const setContextMenuShow = (show: boolean) => {
+    if (timer.current) {
+      clearTimeout(timer.current);
+      timer.current = null;
+    }
+    timer.current = setTimeout(() => {
+      setState({
+        canShowContextMenu: show,
+      });
+    });
   };
 
   const getUpdateComponent = (id: string) => {
@@ -215,6 +259,50 @@ const Editor = (props: EditorProps) => {
     onRedo,
   };
 
+  const contextMenuActions = useMemo(() => {
+    const result = [
+      {
+        type: 'item',
+        trigger: `${prefixCls}-canvas-wrapper`,
+        actions: [
+          {
+            text: '复制',
+            shortcut: '⌘C / Ctrl+C',
+            action: (id?: string) => {
+              const component = components?.find((item) => item.id === id);
+              message.success('已拷贝当前图层', 1);
+              dispatch(setCopiedComponent(component));
+            },
+          },
+          {
+            text: '删除',
+            shortcut: 'Backspace / Delete',
+            action: (id?: string) => {
+              dispatch(deleteComponent(id));
+            },
+          },
+        ],
+      },
+    ];
+    if (copiedComponent) {
+      result.push({
+        type: 'page',
+        trigger: `${prefixCls}-canvas-body__container`,
+        actions: [
+          {
+            text: '粘贴',
+            shortcut: '⌘V / Ctrl+V',
+            action: () => {
+              dispatch(pasteCopiedComponent(copiedComponent));
+              message.success('已粘贴图层', 1);
+            },
+          },
+        ],
+      });
+    }
+    return result;
+  }, [components, copiedComponent]);
+
   return (
     <EditorContext.Provider value={contextValue}>
       <Layout
@@ -262,6 +350,17 @@ const Editor = (props: EditorProps) => {
             />
           </Sider>
         </ALayout>
+        <ContextMenu
+          // actions={contextMenuActions}
+          // triggerContainer={`${prefixCls}-canvas-wrapper`}
+          triggerActions={contextMenuActions}
+          // canShow={state.canShowContextMenu}
+          onMenuOpen={onMenuOpen}
+        />
+        {/* <ContextMenu
+          actions={contextMenuActionsForCanvas}
+          triggerContainer={`${prefixCls}-canvas-body__container`}
+        /> */}
       </Layout>
     </EditorContext.Provider>
   );

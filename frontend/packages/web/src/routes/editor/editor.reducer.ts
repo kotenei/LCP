@@ -1,14 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { cloneDeep } from 'lodash-es';
 import { v4 as uuidv4 } from 'uuid';
-import { getTemplate } from './editor.actions';
-import { ComponentData, HistoryProps, PageData, TemplateData } from './typing';
 import { insertAt } from '@lcp/utils';
+import { ComponentData, HistoryProps } from './editor.types';
+import { PageData } from '../../common/modules/template';
 
 // 定义初始状态的类型
 export interface EditorState {
-  template?: TemplateData | null;
-  templateLoading: boolean;
   components?: ComponentData[];
   currentComponent?: ComponentData | null;
   page?: PageData;
@@ -20,8 +18,6 @@ export interface EditorState {
 
 // 初始状态
 const initialState: EditorState = {
-  template: null,
-  templateLoading: false,
   components: [],
   currentComponent: null,
   page: {
@@ -223,21 +219,6 @@ export const editorSlice = createSlice({
         state.historyIndex++;
       }
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(getTemplate.pending, (state) => {
-        state.template = null;
-        state.templateLoading = true;
-      })
-      .addCase(getTemplate.fulfilled, (state, action) => {
-        state.template = action.payload;
-        state.templateLoading = false;
-      })
-      .addCase(getTemplate.rejected, (state) => {
-        state.template = null;
-        state.templateLoading = false;
-      });
   },
 });
 

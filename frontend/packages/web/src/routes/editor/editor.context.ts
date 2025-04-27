@@ -1,5 +1,5 @@
 import React from "react";
-import { ComponentData } from "./typing";
+import { ComponentData } from "./editor.types";
 
 export interface EditorContextProps {
   onItemAdd: (item: ComponentData) => void;

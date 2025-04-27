@@ -1,5 +1,5 @@
 import { customPropsToForm, mapPropsToForm } from "../common/schema";
-import { ComponentProps, FormProps } from "../routes/editor/typing";
+import { ComponentProps, FormProps } from "../routes/editor/editor.types";
 import { v4 as uuidv4 } from "uuid";
 
 export const componentToFormProps = (component?: ComponentProps) => {

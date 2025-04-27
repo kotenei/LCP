@@ -1,5 +1,5 @@
 import React, { CSSProperties } from "react";
-import { ComponentData } from "../../routes/editor/typing";
+import { ComponentData } from "../../routes/editor/editor.types";
 
 export interface ComponentProps {
   [key: string]: any;
